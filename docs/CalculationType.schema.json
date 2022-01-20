@@ -1,0 +1,13 @@
+{
+  "$id": "CalculationType.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "string",
+  "title": "CalculationType",
+  "enum": [
+    "SIMPLE_CALCULATION",
+    "CONTRIBUTION_ANALYSIS",
+    "UPSTREAM_ANALYSIS",
+    "MONTE_CARLO_SIMULATION"
+  ],
+  "description": "An enumeration of the different calculation methods supported by openLCA.\n"
+}

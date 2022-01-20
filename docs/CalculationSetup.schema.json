@@ -1,0 +1,74 @@
+{
+  "$id": "CalculationSetup.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "CalculationSetup",
+  "properties": {
+    "calculationType": {
+      "$ref": "CalculationType.schema.json",
+      "description": "The type of calculation that should be performed.",
+      "protoIndex": 1
+    },
+    "productSystem": {
+      "$ref": "Ref.schema.json",
+      "description": "The product system that should be calculated.",
+      "protoIndex": 2
+    },
+    "process": {
+      "$ref": "Ref.schema.json",
+      "description": "The process that should be calculated.",
+      "protoIndex": 3
+    },
+    "impactMethod": {
+      "$ref": "Ref.schema.json",
+      "description": "The LCIA method for the calculation.",
+      "protoIndex": 4
+    },
+    "nwSet": {
+      "$ref": "Ref.schema.json",
+      "description": "The normalisation and weighting set for the calculation.",
+      "protoIndex": 5
+    },
+    "parameters": {
+      "type": "array",
+      "item": {
+        "$ref": "ParameterRedef.schema.json"
+      },
+      "description": "A list of parameter redefinitions that should be used in the calculation.\n",
+      "protoIndex": 6
+    },
+    "allocation": {
+      "$ref": "AllocationType.schema.json",
+      "description": "The calculation type to be used in the calculation.",
+      "protoIndex": 7
+    },
+    "withCosts": {
+      "type": "boolean",
+      "description": "Indicates whether life cycle costs should be also calculated.\n",
+      "protoIndex": 8
+    },
+    "withRegionalization": {
+      "type": "boolean",
+      "description": "Indicates whether a regionalized result should be calculated or not.\n",
+      "protoIndex": 9
+    },
+    "unit": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 10
+    },
+    "amount": {
+      "type": "number",
+      "protoIndex": 11
+    },
+    "flowProperty": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 12
+    },
+    "numberOfRuns": {
+      "type": "integer",
+      "description": "This field is only valid when this setup describes a Monte Carlo simulation and contains the number of simulation runs in that case.\n",
+      "protoIndex": 13
+    }
+  },
+  "description": "A setup for a product system calculation."
+}

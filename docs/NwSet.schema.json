@@ -1,0 +1,43 @@
+{
+  "$id": "NwSet.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "NwSet",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the entity.",
+      "protoIndex": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the entity.",
+      "protoIndex": 2
+    },
+    "version": {
+      "type": "string",
+      "description": "A version number in MAJOR.MINOR.PATCH format where the MINOR and PATCH fields are optional and the fields may have leading zeros (so 01.00.00 is the same as 1.0.0 or 1).\n",
+      "protoIndex": 3
+    },
+    "lastChange": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp when the entity was changed the last time.",
+      "protoIndex": 4
+    },
+    "weightedScoreUnit": {
+      "type": "string",
+      "description": "This is the optional unit of the (normalized and) weighted score when this normalization and weighting set was applied on a LCIA result.\n",
+      "protoIndex": 5
+    },
+    "factors": {
+      "type": "array",
+      "item": {
+        "$ref": "NwFactor.schema.json"
+      },
+      "description": "The list of normalization and weighting factors of this set.",
+      "protoIndex": 6
+    }
+  },
+  "description": "A normalization and weighting set."
+}

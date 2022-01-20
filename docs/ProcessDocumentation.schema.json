@@ -1,0 +1,110 @@
+{
+  "$id": "ProcessDocumentation.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "ProcessDocumentation",
+  "properties": {
+    "timeDescription": {
+      "type": "string",
+      "protoIndex": 1
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date",
+      "protoIndex": 2
+    },
+    "validFrom": {
+      "type": "string",
+      "format": "date",
+      "protoIndex": 3
+    },
+    "technologyDescription": {
+      "type": "string",
+      "protoIndex": 4
+    },
+    "dataCollectionDescription": {
+      "type": "string",
+      "protoIndex": 5
+    },
+    "completenessDescription": {
+      "type": "string",
+      "protoIndex": 6
+    },
+    "dataSelectionDescription": {
+      "type": "string",
+      "protoIndex": 7
+    },
+    "reviewDetails": {
+      "type": "string",
+      "protoIndex": 8
+    },
+    "dataTreatmentDescription": {
+      "type": "string",
+      "protoIndex": 9
+    },
+    "inventoryMethodDescription": {
+      "type": "string",
+      "protoIndex": 10
+    },
+    "modelingConstantsDescription": {
+      "type": "string",
+      "protoIndex": 11
+    },
+    "reviewer": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 12
+    },
+    "samplingDescription": {
+      "type": "string",
+      "protoIndex": 13
+    },
+    "sources": {
+      "type": "array",
+      "item": {
+        "$ref": "Ref.schema.json"
+      },
+      "protoIndex": 14
+    },
+    "restrictionsDescription": {
+      "type": "string",
+      "protoIndex": 15
+    },
+    "copyright": {
+      "type": "boolean",
+      "protoIndex": 16
+    },
+    "creationDate": {
+      "type": "string",
+      "format": "date-time",
+      "protoIndex": 17
+    },
+    "dataDocumentor": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 18
+    },
+    "dataGenerator": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 19
+    },
+    "dataSetOwner": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 20
+    },
+    "intendedApplication": {
+      "type": "string",
+      "protoIndex": 21
+    },
+    "projectDescription": {
+      "type": "string",
+      "protoIndex": 22
+    },
+    "publication": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 23
+    },
+    "geographyDescription": {
+      "type": "string",
+      "protoIndex": 24
+    }
+  }
+}

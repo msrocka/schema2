@@ -1,0 +1,122 @@
+{
+  "$id": "Process.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "Process",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the entity.",
+      "protoIndex": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the entity.",
+      "protoIndex": 2
+    },
+    "version": {
+      "type": "string",
+      "description": "A version number in MAJOR.MINOR.PATCH format where the MINOR and PATCH fields are optional and the fields may have leading zeros (so 01.00.00 is the same as 1.0.0 or 1).\n",
+      "protoIndex": 3
+    },
+    "lastChange": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp when the entity was changed the last time.",
+      "protoIndex": 4
+    },
+    "category": {
+      "$ref": "Ref.schema.json",
+      "description": "The category of the entity.",
+      "protoIndex": 5
+    },
+    "tags": {
+      "type": "array",
+      "item": "string",
+      "description": "A list of optional tags. A tag is just a string which should not contain commas (and other special characters).\n",
+      "protoIndex": 6
+    },
+    "library": {
+      "type": "string",
+      "description": "If this entity is part of a library, this field contains the identifier of that library. The identifier is typically just the combination of the library name and version.\n",
+      "protoIndex": 7
+    },
+    "allocationFactors": {
+      "type": "array",
+      "item": {
+        "$ref": "AllocationFactor.schema.json"
+      },
+      "protoIndex": 8
+    },
+    "defaultAllocationMethod": {
+      "$ref": "AllocationType.schema.json",
+      "protoIndex": 9
+    },
+    "exchanges": {
+      "type": "array",
+      "item": {
+        "$ref": "Exchange.schema.json"
+      },
+      "description": "The inputs and outputs of the process.",
+      "protoIndex": 10
+    },
+    "lastInternalId": {
+      "type": "integer",
+      "description": "This field holds the last internal ID that was used in an exchange (which may have been deleted, so it can be larger than the largest internal ID of the exchanges of the process.) The internal ID of an exchange is used to identify exchanges within a process (for updates, data exchanges (see process links), etc.). When you add an exchange to a process, you should increment this field in the process and set the resulting value as the internal ID of that exchange. The sequence of internal IDs should start with `1`.\n",
+      "protoIndex": 11
+    },
+    "location": {
+      "$ref": "Ref.schema.json",
+      "description": "The location of the process.",
+      "protoIndex": 12
+    },
+    "parameters": {
+      "type": "array",
+      "item": {
+        "$ref": "Parameter.schema.json"
+      },
+      "protoIndex": 13
+    },
+    "processDocumentation": {
+      "$ref": "ProcessDocumentation.schema.json",
+      "protoIndex": 14
+    },
+    "processType": {
+      "$ref": "ProcessType.schema.json",
+      "protoIndex": 15
+    },
+    "dqSystem": {
+      "$ref": "Ref.schema.json",
+      "description": "A reference to a data quality system ([DQSystem]) with which the overall quality of the process can be assessed.\n",
+      "protoIndex": 16
+    },
+    "exchangeDqSystem": {
+      "$ref": "Ref.schema.json",
+      "description": "A reference to a data quality system ([DQSystem]) with which the quality of individual inputs and outputs ([Exchange]s) of the process can be assessed.\n",
+      "protoIndex": 17
+    },
+    "socialDqSystem": {
+      "$ref": "Ref.schema.json",
+      "description": "A reference to a data quality system ([DQSystem]) with which the quality of individual social aspects of the process can be assessed.\n",
+      "protoIndex": 18
+    },
+    "dqEntry": {
+      "type": "string",
+      "description": "A data quality entry like `(1;3;2;5;1)`. The entry is a vector of data quality values that need to match the overall data quality system of the process (the system that is stored in the `dqSystem` property). In such a system the data quality indicators have fixed positions and the respective values in the `dqEntry` vector map to these positions.\n",
+      "protoIndex": 19
+    },
+    "infrastructureProcess": {
+      "type": "boolean",
+      "description": "Indicates whether this process describes an infrastructure process. This field is part of the openLCA schema because of backward compatibility with EcoSpold 1. It does not really have a meaning in openLCA and should not be used anymore.\n",
+      "protoIndex": 20
+    },
+    "socialAspects": {
+      "type": "array",
+      "item": {
+        "$ref": "SocialAspect.schema.json"
+      },
+      "description": "A set of social aspects related to this process.",
+      "protoIndex": 21
+    }
+  }
+}

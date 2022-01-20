@@ -1,0 +1,8 @@
+{
+  "$id": "Entity.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "Entity",
+  "properties": {},
+  "description": "The most generic type of the openLCA data model."
+}

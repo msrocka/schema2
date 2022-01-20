@@ -1,0 +1,27 @@
+{
+  "$id": "ModelType.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "string",
+  "title": "ModelType",
+  "enum": [
+    "ACTOR",
+    "CATEGORY",
+    "CURRENCY",
+    "DQ_SYSTEM",
+    "FLOW",
+    "FLOW_PROPERTY",
+    "IMPACT_CATEGORY",
+    "IMPACT_METHOD",
+    "LOCATION",
+    "NW_SET",
+    "PARAMETER",
+    "PROCESS",
+    "PRODUCT_SYSTEM",
+    "PROJECT",
+    "SOCIAL_INDICATOR",
+    "SOURCE",
+    "UNIT",
+    "UNIT_GROUP"
+  ],
+  "description": "An enumeration of the root entity types."
+}

@@ -1,0 +1,34 @@
+{
+  "$id": "ParameterRedef.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "ParameterRedef",
+  "properties": {
+    "context": {
+      "$ref": "Ref.schema.json",
+      "description": "The context of the paramater (a process or LCIA method). If no context is provided it is assumed that this is a redefinition of a global parameter.\n",
+      "protoIndex": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of this parameter redefinition.",
+      "protoIndex": 2
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the redefined parameter. Note that parameter names are used in formulas so they need to follow specific syntax rules. A redefinition replaces a bound parameter in a specific context and thus has to exactly match the respective name.\n",
+      "protoIndex": 3
+    },
+    "uncertainty": {
+      "$ref": "Uncertainty.schema.json",
+      "description": "An uncertainty distribution for the redefined parameter value.\n",
+      "protoIndex": 4
+    },
+    "value": {
+      "type": "number",
+      "description": "The value of the redefined parameter.",
+      "protoIndex": 5
+    }
+  },
+  "description": "A redefinition of a parameter in a product system."
+}

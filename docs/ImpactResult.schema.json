@@ -1,0 +1,19 @@
+{
+  "$id": "ImpactResult.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "ImpactResult",
+  "properties": {
+    "impactCategory": {
+      "$ref": "Ref.schema.json",
+      "description": "The reference to the impact assessment category.",
+      "protoIndex": 1
+    },
+    "value": {
+      "type": "number",
+      "description": "The value of the flow amount.",
+      "protoIndex": 2
+    }
+  },
+  "description": "A result value for an impact assessment category.\n"
+}

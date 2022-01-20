@@ -1,0 +1,21 @@
+{
+  "$id": "NwFactor.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "NwFactor",
+  "properties": {
+    "impactCategory": {
+      "$ref": "Ref.schema.json",
+      "protoIndex": 1
+    },
+    "normalisationFactor": {
+      "type": "number",
+      "protoIndex": 2
+    },
+    "weightingFactor": {
+      "type": "number",
+      "protoIndex": 3
+    }
+  },
+  "description": "A normalization and weighting factor of a [NwSet] related to an impact category. Depending on the purpose of the [NwSet] (normalization, weighting, or both) the normalization and weighting factor can be present or not.\n"
+}

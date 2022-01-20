@@ -1,0 +1,84 @@
+{
+  "$id": "Uncertainty.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "Uncertainty",
+  "properties": {
+    "distributionType": {
+      "$ref": "UncertaintyType.schema.json",
+      "description": "The uncertainty distribution type",
+      "protoIndex": 1
+    },
+    "mean": {
+      "type": "number",
+      "description": "The arithmetic mean (used for normal distributions).",
+      "protoIndex": 2
+    },
+    "meanFormula": {
+      "type": "string",
+      "description": "A mathematical formula for the arithmetic mean.",
+      "protoIndex": 3
+    },
+    "geomMean": {
+      "type": "number",
+      "description": "The geometric mean value (used for log-normal distributions).",
+      "protoIndex": 4
+    },
+    "geomMeanFormula": {
+      "type": "string",
+      "description": "A mathematical formula for the geometric mean.",
+      "protoIndex": 5
+    },
+    "minimum": {
+      "type": "number",
+      "description": "The minimum value (used for uniform and triangle distributions).",
+      "protoIndex": 6
+    },
+    "minimumFormula": {
+      "type": "string",
+      "description": "A mathematical formula for the minimum value.",
+      "protoIndex": 7
+    },
+    "sd": {
+      "type": "number",
+      "description": "The arithmetic standard deviation  (used for normal distributions).",
+      "protoIndex": 8
+    },
+    "sdFormula": {
+      "type": "string",
+      "description": "A mathematical formula for the arithmetic standard deviation.",
+      "protoIndex": 9
+    },
+    "geomSd": {
+      "type": "number",
+      "description": "The geometric standard deviation (used for log-normal distributions).",
+      "protoIndex": 10
+    },
+    "geomSdFormula": {
+      "type": "string",
+      "description": "A mathematical formula for the geometric standard deviation.",
+      "protoIndex": 11
+    },
+    "mode": {
+      "type": "number",
+      "description": "The most likely value (used for triangle distributions).",
+      "protoIndex": 12
+    },
+    "modeFormula": {
+      "type": "string",
+      "description": "A mathematical formula for the most likely value.",
+      "protoIndex": 13
+    },
+    "maximum": {
+      "type": "number",
+      "description": "The maximum value (used for uniform and triangle distributions).",
+      "protoIndex": 14
+    },
+    "maximumFormula": {
+      "type": "string",
+      "description": "A mathematical formula for the maximum value.",
+      "protoIndex": 15
+    }
+  },
+  "description": "Defines the parameter values of an uncertainty distribution. Depending on the uncertainty distribution type different parameters could be used.\n"
+}

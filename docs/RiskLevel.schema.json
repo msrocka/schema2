@@ -1,0 +1,20 @@
+{
+  "$id": "RiskLevel.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "string",
+  "title": "RiskLevel",
+  "enum": [
+    "NO_OPPORTUNITY",
+    "HIGH_OPPORTUNITY",
+    "MEDIUM_OPPORTUNITY",
+    "LOW_OPPORTUNITY",
+    "NO_RISK",
+    "VERY_LOW_RISK",
+    "LOW_RISK",
+    "MEDIUM_RISK",
+    "HIGH_RISK",
+    "VERY_HIGH_RISK",
+    "NO_DATA",
+    "NOT_APPLICABLE"
+  ]
+}

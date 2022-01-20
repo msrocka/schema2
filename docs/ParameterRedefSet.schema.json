@@ -1,0 +1,32 @@
+{
+  "$id": "ParameterRedefSet.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "ParameterRedefSet",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the parameter set.",
+      "protoIndex": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of the parameter set.",
+      "protoIndex": 2
+    },
+    "isBaseline": {
+      "type": "boolean",
+      "description": "Indicates if this set of parameter redefinitions is the baseline for a product system.\n",
+      "protoIndex": 3
+    },
+    "parameters": {
+      "type": "array",
+      "item": {
+        "$ref": "ParameterRedef.schema.json"
+      },
+      "description": "The parameter redefinitions of this redefinition set.",
+      "protoIndex": 4
+    }
+  },
+  "description": "An instance of this class is just a set of parameter redefinitions attached to a product system. It can have a name and a description. One of the parameter sets can be defined as the baseline of the product system. In the calculation the baseline set is then taken by default.\n"
+}

@@ -10,7 +10,3 @@ repository but this may change.
 
 See the `build_from_yaml.py` script. The documentation is created via
 [JSON Schema for Humans](https://github.com/coveooss/json-schema-for-humans).
-
-##
-
-generate-schema-doc generated doc --config with_footer=false

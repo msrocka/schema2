@@ -1,0 +1,24 @@
+{
+  "$id": "FlowMapEntry.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "FlowMapEntry",
+  "properties": {
+    "from": {
+      "$ref": "FlowMapRef.schema.json",
+      "description": "Describes the source flow of the mapping.",
+      "protoIndex": 1
+    },
+    "to": {
+      "$ref": "FlowMapRef.schema.json",
+      "description": "Describes the target of the mapping.",
+      "protoIndex": 2
+    },
+    "conversionFactor": {
+      "type": "number",
+      "description": "The conversion factor to convert the amount of 1 unit of the source flow into the corresponding quantity of the target flow.\n",
+      "protoIndex": 3
+    }
+  },
+  "description": "A mapping from a source flow to a target flow."
+}

@@ -1,0 +1,46 @@
+{
+  "$id": "Unit.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "Unit",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the entity.",
+      "protoIndex": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the entity.",
+      "protoIndex": 2
+    },
+    "version": {
+      "type": "string",
+      "description": "A version number in MAJOR.MINOR.PATCH format where the MINOR and PATCH fields are optional and the fields may have leading zeros (so 01.00.00 is the same as 1.0.0 or 1).\n",
+      "protoIndex": 3
+    },
+    "lastChange": {
+      "type": "string",
+      "format": "date-time",
+      "description": "The timestamp when the entity was changed the last time.",
+      "protoIndex": 4
+    },
+    "conversionFactor": {
+      "type": "number",
+      "description": "The conversion factor to the reference unit of the unit group to which this unit belongs.\n",
+      "protoIndex": 5
+    },
+    "referenceUnit": {
+      "type": "boolean",
+      "description": "Indicates whether the unit is the reference unit of the unit group to which this unit belongs. If it is the reference unit the conversion factor must be 1.0. There should be always only one reference unit in a unit group. The reference unit is used to convert amounts given in one unit to amounts given in another unit of the respective unit group.\n",
+      "protoIndex": 6
+    },
+    "synonyms": {
+      "type": "array",
+      "item": "string",
+      "description": "A list of synonyms for the unit.",
+      "protoIndex": 7
+    }
+  },
+  "description": "An unit of measure"
+}
