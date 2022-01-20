@@ -15,6 +15,14 @@ class Model(NamedTuple):
     def new() -> 'Model':
         return Model({}, {})
 
+    def all_defs(self) -> list:
+        defs = []
+        for c in self.classes.values():
+            defs.append(c)
+        for e in self.enums.values():
+            defs.append(e)
+        return defs
+
 
 class PropDef(NamedTuple):
     model: Model
@@ -31,6 +39,8 @@ class PropDef(NamedTuple):
                 case 'string': return 'string'
                 case 'double': return 'number'
                 case 'boolean': return 'boolean'
+                case 'int': return 'integer'
+                case 'integer': return 'integer'
                 case _:
                     if type_def[0].isupper():
                         return {'$ref': f'{type_def}.schema.json'}
@@ -47,6 +57,12 @@ class PropDef(NamedTuple):
             item_type = type_def[5:len(type_def)-1]
             schema['type'] = 'array'
             schema['item'] = schema_type(item_type)
+        elif type_def == 'dateTime':
+            schema['type'] = 'string'
+            schema['format'] = 'date-time'
+        elif type_def == 'date':
+            schema['type'] = 'string'
+            schema['format'] = 'date'
         else:
             schema['type'] = schema_type(type_def)
 
@@ -107,9 +123,31 @@ class ClassDef(NamedTuple):
         return schema
 
 
-class EnumDef:
-    model: 'Model'
-    pass
+class EnumDef(NamedTuple):
+    obj: dict[str, any]
+
+    def name(self):
+        return self.obj['name']
+
+    def to_schema(self) -> dict:
+        name = self.name()
+        schema = {
+            '$id': f'{name}.schema.json',
+            '$schema': 'https://json-schema.org/draft/2020-12/schema',
+            'type': 'string',
+            'title': name,
+            'enum': []
+        }
+
+        doc = self.obj.get('doc')
+        if doc:
+            schema['description'] = doc
+
+        items: list[dict[str, any]] = self.obj.get('items', [])
+        for item in items:
+            schema['enum'].append(item['name'])
+
+        return schema
 
 
 def main():
@@ -119,14 +157,17 @@ def main():
         with open(path, 'r', encoding='utf-8') as inp:
             decl: dict[str, any] = yaml.load(inp, yaml.SafeLoader)
             class_def: Optional[dict] = decl.get('class')
-            if not class_def:
-                continue
-            name: str = class_def['name']
-            model.classes[name] = ClassDef(model, class_def)
+            if class_def:
+                name: str = class_def['name']
+                model.classes[name] = ClassDef(model, class_def)
+            enum_def: Optional[dict] = decl.get('enum')
+            if enum_def:
+                name: str = enum_def['name']
+                model.enums[name] = EnumDef(enum_def)
 
-    for class_def in model.classes.values():
-        name = class_def.name()
-        schema = class_def.to_schema()
+    for d in model.all_defs():
+        name = d.name()
+        schema = d.to_schema()
         path = f'generated/{name}.schema.json'
         with open(path, 'w', encoding='utf-8') as out:
             json.dump(schema, out, indent=2)
