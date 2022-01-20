@@ -50,9 +50,7 @@ class PropDef(NamedTuple):
         schema = {}
         type_def: str = self.obj['type']
         if type_def.startswith('Ref['):
-            schema['type'] = {
-                '$ref': 'Ref.schema.json'
-            }
+            schema['$ref'] = 'Ref.schema.json'
         elif type_def.startswith('List['):
             item_type = type_def[5:len(type_def)-1]
             schema['type'] = 'array'
@@ -63,6 +61,8 @@ class PropDef(NamedTuple):
         elif type_def == 'date':
             schema['type'] = 'string'
             schema['format'] = 'date'
+        elif type_def[0].isupper():
+            schema['$ref'] = f'{type_def}.schema.json'
         else:
             schema['type'] = schema_type(type_def)
 
