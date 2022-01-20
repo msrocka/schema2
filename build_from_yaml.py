@@ -1,11 +1,14 @@
+# you need to have PyYaml installed in order to run this script
+
 import json
 import os
-from typing import NamedTuple, Optional
 import yaml
+
+from typing import NamedTuple, Optional
 
 
 YAML_DIR = 'C:/Users/Win10/Projects/openLCA/repos/olca-schema/yaml'
-
+OUT_DIR = 'docs'
 
 class Model(NamedTuple):
     classes: dict[str, 'ClassDef']
@@ -42,6 +45,8 @@ class PropDef(NamedTuple):
                 case 'int': return 'integer'
                 case 'integer': return 'integer'
                 case _:
+                    if type_def.startswith('Ref['):
+                        return {'$ref': f'Ref.schema.json'}
                     if type_def[0].isupper():
                         return {'$ref': f'{type_def}.schema.json'}
                     print(f'unmatched primitive type: {type_def}')
@@ -61,6 +66,9 @@ class PropDef(NamedTuple):
         elif type_def == 'date':
             schema['type'] = 'string'
             schema['format'] = 'date'
+        elif type_def == 'GeoJSON':
+            schema['type'] = 'object'
+            schema['format'] = 'GeoJSON'
         elif type_def[0].isupper():
             schema['$ref'] = f'{type_def}.schema.json'
         else:
@@ -151,6 +159,9 @@ class EnumDef(NamedTuple):
 
 
 def main():
+    if not os.path.isdir(OUT_DIR):
+        os.makedirs(OUT_DIR)
+
     model = Model.new()
     for f in os.listdir(YAML_DIR):
         path = os.path.join(YAML_DIR, f)
@@ -168,7 +179,7 @@ def main():
     for d in model.all_defs():
         name = d.name()
         schema = d.to_schema()
-        path = f'generated/{name}.schema.json'
+        path = f'{OUT_DIR}/{name}.schema.json'
         with open(path, 'w', encoding='utf-8') as out:
             json.dump(schema, out, indent=2)
 
