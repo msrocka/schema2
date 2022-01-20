@@ -97,6 +97,12 @@ class ClassDef(NamedTuple):
             return None
         return self.model.classes.get(c)
 
+    def is_root_entity(self) -> bool:
+        if self.name() == 'RootEntity':
+            return True
+        s = self.super_class()
+        return s is not None and s.is_root_entity()
+
     def properties(self) -> list[PropDef]:
         sc = self.super_class()
         properties = sc.properties() if sc else []
@@ -122,6 +128,18 @@ class ClassDef(NamedTuple):
             schema['description'] = doc
 
         proto_idx = 0
+
+        if self.is_root_entity():
+            schema['properties']['@id'] = {
+                'type': 'string',
+                'format': 'uuid',
+                'description': f'The ID of the `{name}`.'
+            }
+            schema['properties']['@type'] = {
+                'const': name,
+            }
+            proto_idx = 2
+
         for prop in self.properties():
             proto_idx += 1
             prop_schema = prop.to_schema()
@@ -178,6 +196,8 @@ def main():
 
     for d in model.all_defs():
         name = d.name()
+        if name in ('Entity', 'RootEntity', 'CategorizedEntity'):
+            continue
         schema = d.to_schema()
         path = f'{OUT_DIR}/{name}.schema.json'
         with open(path, 'w', encoding='utf-8') as out:

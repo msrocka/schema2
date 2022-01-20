@@ -4,42 +4,50 @@
   "type": "object",
   "title": "ProductSystem",
   "properties": {
+    "@id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The ID of the `ProductSystem`."
+    },
+    "@type": {
+      "const": "ProductSystem"
+    },
     "name": {
       "type": "string",
       "description": "The name of the entity.",
-      "protoIndex": 1
+      "protoIndex": 3
     },
     "description": {
       "type": "string",
       "description": "The description of the entity.",
-      "protoIndex": 2
+      "protoIndex": 4
     },
     "version": {
       "type": "string",
       "description": "A version number in MAJOR.MINOR.PATCH format where the MINOR and PATCH fields are optional and the fields may have leading zeros (so 01.00.00 is the same as 1.0.0 or 1).\n",
-      "protoIndex": 3
+      "protoIndex": 5
     },
     "lastChange": {
       "type": "string",
       "format": "date-time",
       "description": "The timestamp when the entity was changed the last time.",
-      "protoIndex": 4
+      "protoIndex": 6
     },
     "category": {
       "$ref": "Ref.schema.json",
       "description": "The category of the entity.",
-      "protoIndex": 5
+      "protoIndex": 7
     },
     "tags": {
       "type": "array",
       "item": "string",
       "description": "A list of optional tags. A tag is just a string which should not contain commas (and other special characters).\n",
-      "protoIndex": 6
+      "protoIndex": 8
     },
     "library": {
       "type": "string",
       "description": "If this entity is part of a library, this field contains the identifier of that library. The identifier is typically just the combination of the library name and version.\n",
-      "protoIndex": 7
+      "protoIndex": 9
     },
     "processes": {
       "type": "array",
@@ -47,32 +55,32 @@
         "$ref": "Ref.schema.json"
       },
       "description": "The descriptors of all processes and sub-systems that are contained in the product system.\n",
-      "protoIndex": 8
+      "protoIndex": 10
     },
     "referenceProcess": {
       "$ref": "Ref.schema.json",
       "description": "The descriptor of the process that provides the flow of the functional unit of the product system.\n",
-      "protoIndex": 9
+      "protoIndex": 11
     },
     "referenceExchange": {
       "$ref": "ExchangeRef.schema.json",
       "description": "The exchange of the reference processes (typically the product output) that provides the flow of the functional unit of the product system.\n",
-      "protoIndex": 10
+      "protoIndex": 12
     },
     "targetAmount": {
       "type": "number",
       "description": "The flow amount of the functional unit of the product system.",
-      "protoIndex": 11
+      "protoIndex": 13
     },
     "targetUnit": {
       "$ref": "Ref.schema.json",
       "description": "The unit in which the flow amount of the functional unit is given.",
-      "protoIndex": 12
+      "protoIndex": 14
     },
     "targetFlowProperty": {
       "$ref": "Ref.schema.json",
       "description": "The flow property in which the flow amount of the functional unit is given.\n",
-      "protoIndex": 13
+      "protoIndex": 15
     },
     "processLinks": {
       "type": "array",
@@ -80,7 +88,7 @@
         "$ref": "ProcessLink.schema.json"
       },
       "description": "The process links of the product system.",
-      "protoIndex": 14
+      "protoIndex": 16
     },
     "parameterSets": {
       "type": "array",
@@ -88,7 +96,7 @@
         "$ref": "ParameterRedefSet.schema.json"
       },
       "description": "A list of possible sets of parameter redefinitions for this product system.\n",
-      "protoIndex": 15
+      "protoIndex": 17
     }
   },
   "description": "A product system describes the supply chain of a product (the functional unit) ..."

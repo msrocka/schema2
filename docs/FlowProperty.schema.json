@@ -4,52 +4,60 @@
   "type": "object",
   "title": "FlowProperty",
   "properties": {
+    "@id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The ID of the `FlowProperty`."
+    },
+    "@type": {
+      "const": "FlowProperty"
+    },
     "name": {
       "type": "string",
       "description": "The name of the entity.",
-      "protoIndex": 1
+      "protoIndex": 3
     },
     "description": {
       "type": "string",
       "description": "The description of the entity.",
-      "protoIndex": 2
+      "protoIndex": 4
     },
     "version": {
       "type": "string",
       "description": "A version number in MAJOR.MINOR.PATCH format where the MINOR and PATCH fields are optional and the fields may have leading zeros (so 01.00.00 is the same as 1.0.0 or 1).\n",
-      "protoIndex": 3
+      "protoIndex": 5
     },
     "lastChange": {
       "type": "string",
       "format": "date-time",
       "description": "The timestamp when the entity was changed the last time.",
-      "protoIndex": 4
+      "protoIndex": 6
     },
     "category": {
       "$ref": "Ref.schema.json",
       "description": "The category of the entity.",
-      "protoIndex": 5
+      "protoIndex": 7
     },
     "tags": {
       "type": "array",
       "item": "string",
       "description": "A list of optional tags. A tag is just a string which should not contain commas (and other special characters).\n",
-      "protoIndex": 6
+      "protoIndex": 8
     },
     "library": {
       "type": "string",
       "description": "If this entity is part of a library, this field contains the identifier of that library. The identifier is typically just the combination of the library name and version.\n",
-      "protoIndex": 7
+      "protoIndex": 9
     },
     "flowPropertyType": {
       "$ref": "FlowPropertyType.schema.json",
       "description": "The type of the flow property",
-      "protoIndex": 8
+      "protoIndex": 10
     },
     "unitGroup": {
       "$ref": "Ref.schema.json",
       "description": "The units of measure that can be used to express quantities of the flow property.",
-      "protoIndex": 9
+      "protoIndex": 11
     }
   },
   "description": "A flow property is a quantity that can be used to express amounts of a flow."
