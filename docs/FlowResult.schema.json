@@ -9,21 +9,39 @@
       "description": "The flow reference.",
       "protoIndex": 1
     },
-    "input": {
+    "isInput": {
       "type": "boolean",
       "description": "Indicates whether the flow is an input or not.",
       "protoIndex": 2
     },
-    "value": {
-      "type": "number",
-      "description": "The value of the flow amount.",
+    "isReferenceFlow": {
+      "type": "boolean",
+      "description": "`true` if this is the quantitative reference flow of the result.",
       "protoIndex": 3
+    },
+    "amount": {
+      "type": "number",
+      "protoIndex": 4
+    },
+    "flowProperty": {
+      "$ref": "Ref.schema.json",
+      "description": "The flow property in which the amount of the result is given. If missing, the amount is expected to be given in the reference flow property of the flow.\n",
+      "protoIndex": 5
+    },
+    "unit": {
+      "$ref": "Ref.schema.json",
+      "description": "The unit in which the amount of the result is given. If missing, the amount is expected to be given in the reference unit of the flow.\n",
+      "protoIndex": 6
     },
     "location": {
       "$ref": "Ref.schema.json",
-      "description": "The (reference to the) location of this flow result in case of a regionalized result.\n",
-      "protoIndex": 4
+      "description": "The location of this flow result in case of a regionalized result.\n",
+      "protoIndex": 7
+    },
+    "description": {
+      "type": "string",
+      "protoIndex": 8
     }
   },
-  "description": "A result value for a flow; given in the reference unit of the flow.\n"
+  "description": "A calculation result of a flow."
 }
