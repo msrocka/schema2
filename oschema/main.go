@@ -5,30 +5,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"unicode"
-
-	"gopkg.in/yaml.v2"
 )
 
 func main() {
 
 	// parse the YAML files
 	yamlDir := findYamlDir()
-	types := collectTypes(yamlDir)
-	typeMap := make(map[string]*YamlType)
-	for i := range types {
-		typeDef := types[i]
-		typeMap[typeDef.name()] = typeDef
-	}
+	yamlModel, err := ReadYamlModel(yamlDir)
+	check(err)
 
 	var buff bytes.Buffer
 	buff.WriteString(FileHeader)
 
 	// write the message and enumeration types
-	for _, typeDef := range types {
+	for _, typeDef := range yamlModel.Types {
 		switch typeDef.name() {
 		case "Entity", "RootEntity", "CategorizedEntity":
 			continue
@@ -42,7 +35,7 @@ func main() {
 				buff.WriteString(comment)
 			}
 			buff.WriteString("message Proto" + class.Name + " {\n\n")
-			fields(class, &buff, typeMap, 1)
+			fields(class, &buff, yamlModel.TypeMap, 1)
 			buff.WriteString("}\n\n")
 			continue
 		}
@@ -85,30 +78,6 @@ func main() {
 		err := ioutil.WriteFile(outFile, buff.Bytes(), os.ModePerm)
 		check(err, "failed to write to file", outFile)
 	}
-}
-
-// Collects the type definitions from the YAML files in the given folder.
-func collectTypes(yamlDir string) []*YamlType {
-	files, err := ioutil.ReadDir(yamlDir)
-	check(err, "failed to read YAML files from", yamlDir)
-	types := make([]*YamlType, 0)
-	for _, file := range files {
-		name := file.Name()
-		if !strings.HasSuffix(name, ".yaml") {
-			continue
-		}
-		fmt.Println("Parse YAML file", name)
-		path := filepath.Join(yamlDir, name)
-		data, err := ioutil.ReadFile(path)
-		check(err, "failed to read file", name)
-		typeDef := &YamlType{}
-		err = yaml.Unmarshal(data, typeDef)
-		check(err, "failed to parse file", name)
-		fmt.Println("Parsed", typeDef)
-		types = append(types, typeDef)
-	}
-	fmt.Println("Collected", len(types), "types")
-	return types
 }
 
 // Writes the fields of the given class to the given buffer. This function
