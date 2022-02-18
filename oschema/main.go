@@ -18,7 +18,7 @@ func main() {
 	// parse the YAML files
 	yamlDir := findYamlDir()
 	types := collectTypes(yamlDir)
-	typeMap := make(map[string]*TypeDef)
+	typeMap := make(map[string]*YamlType)
 	for i := range types {
 		typeDef := types[i]
 		typeMap[typeDef.name()] = typeDef
@@ -88,10 +88,10 @@ func main() {
 }
 
 // Collects the type definitions from the YAML files in the given folder.
-func collectTypes(yamlDir string) []*TypeDef {
+func collectTypes(yamlDir string) []*YamlType {
 	files, err := ioutil.ReadDir(yamlDir)
 	check(err, "failed to read YAML files from", yamlDir)
-	types := make([]*TypeDef, 0)
+	types := make([]*YamlType, 0)
 	for _, file := range files {
 		name := file.Name()
 		if !strings.HasSuffix(name, ".yaml") {
@@ -101,7 +101,7 @@ func collectTypes(yamlDir string) []*TypeDef {
 		path := filepath.Join(yamlDir, name)
 		data, err := ioutil.ReadFile(path)
 		check(err, "failed to read file", name)
-		typeDef := &TypeDef{}
+		typeDef := &YamlType{}
 		err = yaml.Unmarshal(data, typeDef)
 		check(err, "failed to parse file", name)
 		fmt.Println("Parsed", typeDef)
@@ -114,7 +114,7 @@ func collectTypes(yamlDir string) []*TypeDef {
 // Writes the fields of the given class to the given buffer. This function
 // climbs up the class hierarchy and inlines the fields of the corresponding
 // super classes (as there is no extension mechanism in proto3).
-func fields(class *ClassDef, buff *bytes.Buffer, types map[string]*TypeDef, offset int) int {
+func fields(class *YamlClass, buff *bytes.Buffer, types map[string]*YamlType, offset int) int {
 	count := offset
 
 	// write fields of super classes recursively
@@ -241,7 +241,7 @@ func formatComment(comment string, indent string) string {
 // Generates the name of the `UNDEFINED` option for the given
 // enumeration type. As this option has to have a unique name
 // we include the name of the enumeration into that name.
-func undefinedOf(enum *EnumDef) string {
+func undefinedOf(enum *YamlEnum) string {
 	var buff bytes.Buffer
 	for _, char := range enum.Name {
 		if unicode.IsUpper(char) {
