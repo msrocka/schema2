@@ -83,6 +83,10 @@ func (model *YamlModel) ParentOf(class *YamlClass) *YamlClass {
 	return parent.Class
 }
 
+func (model *YamlModel) IsEmpty() bool {
+	return len(model.Types) == 0
+}
+
 func ReadYamlModel(dir string) (*YamlModel, error) {
 
 	files, err := ioutil.ReadDir(dir)

@@ -1,36 +1,61 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func findYamlDir() string {
-	home := findSchemaHome()
-	yamlDir := filepath.Join(home, "yaml")
-	if !isDir(yamlDir) {
-		fmt.Println("error: `yaml` folder does not exist:", yamlDir)
-		os.Exit(1)
-	}
-	return yamlDir
+type args struct {
+	command string
+	yamlDir string
+	target  string
 }
 
-// Searches for the `olca-schema` folder. It can be provided
-// as the first command line argument, or we search for it
-// up in the file hierarchy.
-func findSchemaHome() string {
-	if len(os.Args) > 1 {
-		home := os.Args[1]
-		if !isDir(home) {
-			fmt.Println("error: the first argument does" +
-				" not point to a `olca-schema` folder")
-			os.Exit(1)
-		}
-		return home
+func parseArgs() *args {
+	args := &args{}
+	osArgs := os.Args
+	if len(osArgs) < 2 {
+		return args
 	}
+
+	args.command = osArgs[1]
+	flag := ""
+	for i := 2; i < len(osArgs); i++ {
+		arg := osArgs[i]
+		if strings.HasPrefix(arg, "-") {
+			flag = arg
+			continue
+		}
+		if flag == "" {
+			continue
+		}
+		switch flag {
+		case "-i", "-s", "-input", "-schema":
+			args.yamlDir = arg
+		case "-o", "-output":
+			args.target = arg
+		}
+	}
+
+	if args.yamlDir == "" {
+		// try to find the schema home by going up the directory tree
+		schemaHome := findSchemaHome()
+		if schemaHome != "" {
+			args.yamlDir = filepath.Join(schemaHome, "yaml")
+		} else {
+			args.yamlDir = "."
+		}
+	}
+
+	return args
+}
+
+func findSchemaHome() string {
 	dir, err := filepath.Abs(".")
-	check(err)
+	if err != nil {
+		return ""
+	}
 	for {
 		path := filepath.Join(dir, "olca-schema")
 		if isDir(path) {
@@ -38,9 +63,7 @@ func findSchemaHome() string {
 		}
 		parent := filepath.Dir(dir)
 		if parent == dir {
-			fmt.Println("error: could not find an `olca-schema`" +
-				" folder up in the file hierarchy")
-			os.Exit(1)
+			return ""
 		}
 		dir = parent
 	}

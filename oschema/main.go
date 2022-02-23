@@ -8,18 +8,22 @@ import (
 
 func main() {
 
-	if len(os.Args) < 2 {
+	args := parseArgs()
+
+	if args.command == "" ||
+		args.command == "help" ||
+		args.command == "-h" {
 		printHelp()
 		return
 	}
 
-	switch os.Args[1] {
-	case "help", "-h":
-		printHelp()
+	switch args.command {
 	case "proto":
-		proto()
+		proto(args)
 	case "check":
-		checkSchema()
+		checkSchema(args)
+	default:
+		fmt.Println("unknown command:", args.command)
 	}
 
 }
@@ -32,10 +36,8 @@ func check(err error, msg ...interface{}) {
 	}
 }
 
-func proto() {
-	// parse the YAML files
-	yamlDir := findYamlDir()
-	yamlModel, err := ReadYamlModel(yamlDir)
+func proto(args *args) {
+	yamlModel, err := ReadYamlModel(args.yamlDir)
 	check(err)
 
 	proto := GenProto(yamlModel)

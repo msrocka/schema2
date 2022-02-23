@@ -2,9 +2,8 @@ package main
 
 import "fmt"
 
-func checkSchema() {
-	yamlDir := findYamlDir()
-	yamlModel, err := ReadYamlModel(yamlDir)
+func checkSchema(args *args) {
+	yamlModel, err := ReadYamlModel(args.yamlDir)
 	if err != nil {
 		fmt.Println("ERROR: Failed to parse YAML model:", err)
 		return
