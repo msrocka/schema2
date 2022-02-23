@@ -9,7 +9,7 @@ func checkSchema(args *args) {
 		return
 	}
 
-	// check that every class ends in Entity
+	// check that every class begins in Entity
 	for _, t := range yamlModel.Types {
 		if t.IsEnum() {
 			continue
@@ -23,7 +23,9 @@ func checkSchema(args *args) {
 			if parent == nil {
 				fmt.Println("ERROR: class hierarchy of '" +
 					class.Name + "' does not starts in `Entity`")
+				break
 			}
+			class = parent
 		}
 	}
 
