@@ -95,7 +95,7 @@ func GenProto(yaml *YamlModel) string {
 
 	// write the message and enumeration types
 	for _, typeDef := range yaml.Types {
-		switch typeDef.name() {
+		switch typeDef.Name() {
 		case "Entity", "RootEntity", "CategorizedEntity":
 			continue
 		}

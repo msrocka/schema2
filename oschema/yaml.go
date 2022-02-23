@@ -14,6 +14,14 @@ type YamlType struct {
 	Enum  *YamlEnum  `yaml:"enum"`
 }
 
+func (yt *YamlType) IsClass() bool {
+	return yt.Class != nil
+}
+
+func (yt *YamlType) IsEnum() bool {
+	return yt.Enum != nil
+}
+
 func (yt *YamlType) String() string {
 	if yt.Class != nil {
 		return "ClassDef " + yt.Class.Name
@@ -24,7 +32,7 @@ func (yt *YamlType) String() string {
 	return "Unknown TypeDef"
 }
 
-func (yt *YamlType) name() string {
+func (yt *YamlType) Name() string {
 	if yt.Class != nil {
 		return yt.Class.Name
 	}
@@ -63,6 +71,18 @@ type YamlModel struct {
 	TypeMap map[string]*YamlType
 }
 
+func (model *YamlModel) ParentOf(class *YamlClass) *YamlClass {
+	parentName := class.SuperClass
+	if parentName == "" {
+		return nil
+	}
+	parent := model.TypeMap[parentName]
+	if parent == nil || parent.IsEnum() {
+		return nil
+	}
+	return parent.Class
+}
+
 func ReadYamlModel(dir string) (*YamlModel, error) {
 
 	files, err := ioutil.ReadDir(dir)
@@ -94,7 +114,7 @@ func ReadYamlModel(dir string) (*YamlModel, error) {
 	typeMap := make(map[string]*YamlType)
 	for i := range types {
 		typeDef := types[i]
-		typeMap[typeDef.name()] = typeDef
+		typeMap[typeDef.Name()] = typeDef
 	}
 
 	model := YamlModel{Types: types, TypeMap: typeMap}
