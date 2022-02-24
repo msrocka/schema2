@@ -66,4 +66,32 @@ func checkSchema(args *args) {
 		}
 	}
 
+	// check boolean prefixes
+	boolPrefs := []string{
+		"has", "is", "with",
+	}
+	for _, t := range yamlModel.Types {
+		if t.IsEnum() {
+			continue
+		}
+		for _, prop := range t.Class.Props {
+			if prop.Type != "boolean" {
+				continue
+			}
+			valid := false
+			for _, pref := range boolPrefs {
+				if strings.HasPrefix(prop.Name, pref) {
+					valid = true
+					break
+				}
+			}
+			if !valid {
+				fmt.Println("WARNING: boolean property '" + prop.Name +
+					"' in class '" + t.Name() +
+					"' should start with 'is', 'has', or 'with'")
+			}
+		}
+
+	}
+
 }
