@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -46,13 +47,38 @@ type YamlClass struct {
 	Name       string      `yaml:"name"`
 	SuperClass string      `yaml:"superClass"`
 	Doc        string      `yaml:"doc"`
-	Fields     []*YamlProp `yaml:"properties"`
+	Props      []*YamlProp `yaml:"properties"`
 }
 
 type YamlProp struct {
-	Name string `yaml:"name"`
-	Type string `yaml:"type"`
-	Doc  string `yaml:"doc"`
+	Name  string `yaml:"name"`
+	Index int    `yaml:"index"`
+	Type  string `yaml:"type"`
+	Doc   string `yaml:"doc"`
+}
+
+type YamlPropsByName []*YamlProp
+
+func (s YamlPropsByName) Len() int { return len(s) }
+func (s YamlPropsByName) Less(i, j int) bool {
+	name_i := s[i].Name
+	name_j := s[j].Name
+	if name_i == name_j {
+		return false
+	}
+	firstOrder := []string{"@type", "@id"}
+	for _, f := range firstOrder {
+		if name_i == f {
+			return true
+		}
+		if name_j == f {
+			return false
+		}
+	}
+	return strings.Compare(name_i, name_j) < 0
+}
+func (s YamlPropsByName) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
 }
 
 type YamlEnum struct {
@@ -124,4 +150,19 @@ func ReadYamlModel(dir string) (*YamlModel, error) {
 	model := YamlModel{Types: types, TypeMap: typeMap}
 
 	return &model, nil
+}
+
+func (model *YamlModel) AllPropsOf(class *YamlClass) []*YamlProp {
+	props := make([]*YamlProp, 0, len(class.Props)+1)
+	c := class
+	for {
+		if c == nil {
+			break
+		}
+		props = append(props, c.Props...)
+
+	}
+
+	sort.Sort(YamlPropsByName(props))
+	return props
 }

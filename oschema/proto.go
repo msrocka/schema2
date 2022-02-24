@@ -176,7 +176,7 @@ func writeProtoFields(class *YamlClass, buff *bytes.Buffer, types map[string]*Ya
 	}
 
 	// write fields
-	for _, field := range class.Fields {
+	for _, field := range class.Props {
 
 		// field comment
 		comment := formatComment(field.Doc, "  ")
