@@ -160,9 +160,8 @@ func (model *YamlModel) AllPropsOf(class *YamlClass) []*YamlProp {
 			break
 		}
 		props = append(props, c.Props...)
-
+		c = model.ParentOf(c)
 	}
-
 	sort.Sort(YamlPropsByName(props))
 	return props
 }
