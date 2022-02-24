@@ -2,6 +2,9 @@ package main
 
 import (
 	"bytes"
+	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 	"unicode"
 )
@@ -60,4 +63,30 @@ func formatComment(comment string, indent string) string {
 		text += line + "\n"
 	}
 	return text
+}
+
+func writeFile(file, content string) {
+	err := ioutil.WriteFile(file, []byte(content), os.ModePerm)
+	check(err, "failed to write file: "+file)
+}
+
+func isDir(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.IsDir()
+}
+
+func mkdir(path string) {
+	stat, err := os.Stat(path)
+
+	if err == nil {
+		if stat.IsDir() {
+			return
+		}
+		fmt.Println("ERROR:", path, "exists but it is not a folder")
+		os.Exit(1)
+	}
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(path, os.ModePerm)
+	}
+	check(err, "could not create folder: "+path)
 }

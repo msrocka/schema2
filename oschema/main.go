@@ -20,6 +20,8 @@ func main() {
 	switch args.command {
 	case "proto":
 		proto(args)
+	case "md", "mdbook", "markdown":
+		writeMarkdownBook(args)
 	case "check":
 		checkSchema(args)
 	default:

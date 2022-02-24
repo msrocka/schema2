@@ -68,8 +68,3 @@ func findSchemaHome() string {
 		dir = parent
 	}
 }
-
-func isDir(path string) bool {
-	info, err := os.Stat(path)
-	return err == nil && info.IsDir()
-}
