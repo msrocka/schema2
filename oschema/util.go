@@ -90,3 +90,17 @@ func mkdir(path string) {
 	}
 	check(err, "could not create folder: "+path)
 }
+
+func startsWithLower(s string) bool {
+	if s == "" {
+		return false
+	}
+	for _, char := range s {
+		if unicode.IsLower(char) {
+			return true
+		} else {
+			return false
+		}
+	}
+	return false
+}

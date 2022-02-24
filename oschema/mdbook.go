@@ -2,7 +2,10 @@ package main
 
 import (
 	"bytes"
+	"log"
 	"path/filepath"
+	"strconv"
+	"strings"
 )
 
 type mdWriter struct {
@@ -26,6 +29,9 @@ language = "en"
 multilingual = false
 src = "src"
 title = "openLCA Schema"
+
+[output.html]
+mathjax-support = true
 `)
 
 	w.dir("src")
@@ -82,9 +88,86 @@ func (w *mdWriter) summary() string {
 }
 
 func (w *mdWriter) class(class *YamlClass) string {
-	return "# " + class.Name + "\n\n"
+	var buff bytes.Buffer
+	buff.WriteString("# " + class.Name + "\n\n")
+	buff.WriteString(class.Doc + "\n\n")
+
+	buff.WriteString("## Properties\n\n")
+
+	parents := make([]*YamlClass, 0)
+	parent := w.model.ParentOf(class)
+	for {
+		if parent == nil {
+			break
+		}
+		parents = append([]*YamlClass{parent}, parents...)
+		parent = w.model.ParentOf(parent)
+	}
+
+	for _, p := range parents {
+		for _, prop := range p.Props {
+			buff.WriteString("### `" + prop.Name + "`\n\n")
+			buff.WriteString("Inherited from class [" + p.Name +
+				"](./" + p.Name + ".md)\n\n")
+
+			if prop.Required {
+				buff.WriteString("* _is required_\n")
+			} else {
+				buff.WriteString("* _is optional_\n")
+			}
+			buff.WriteString("* _Type:_ " + w.docTypeOf(prop.Type) + "\n")
+			buff.WriteString("* _Proto-Index:_ " + strconv.Itoa(prop.Index) + "\n")
+		}
+	}
+
+	for _, prop := range class.Props {
+		buff.WriteString("### `" + prop.Name + "`\n\n")
+		if prop.Doc != "" {
+			buff.WriteString(prop.Doc + "\n\n")
+		}
+
+		if prop.Required {
+			buff.WriteString("* _is required_\n")
+		} else {
+			buff.WriteString("* _is optional_\n")
+		}
+		buff.WriteString("* _Type:_ " + w.docTypeOf(prop.Type) + "\n")
+		buff.WriteString("* _Proto-Index:_ " + strconv.Itoa(prop.Index) + "\n")
+	}
+
+	return buff.String()
 }
 
 func (w *mdWriter) enum(enum *YamlEnum) string {
 	return "# " + enum.Name + "\n\n"
+}
+
+func (w *mdWriter) docTypeOf(yamlType string) string {
+
+	if yamlType == "" {
+		return "__ERROR! EMPTY__"
+	}
+
+	if strings.HasPrefix(yamlType, "List[") {
+		unpacked := strings.TrimPrefix(strings.TrimSuffix(yamlType, "]"), "List[")
+		return "`List` of " + w.docTypeOf(unpacked)
+	}
+
+	if strings.HasPrefix(yamlType, "Ref[") {
+		unpacked := strings.TrimPrefix(strings.TrimSuffix(yamlType, "]"), "Ref[")
+		return "[Ref](./Ref.md) of " + w.docTypeOf(unpacked)
+	}
+
+	if yamlType == "GeoJSON" {
+		return "[GeoJSON](https://tools.ietf.org/html/rfc7946)"
+	}
+
+	if startsWithLower(yamlType) {
+		return "[" + yamlType + "](http://www.w3.org/TR/xmlschema-2/#" + yamlType + ")"
+	}
+
+	if w.model.TypeMap[yamlType] == nil {
+		log.Println("WARNING: unknown type:", yamlType)
+	}
+	return "[" + yamlType + "](./" + yamlType + ".md)"
 }

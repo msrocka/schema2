@@ -51,10 +51,11 @@ type YamlClass struct {
 }
 
 type YamlProp struct {
-	Name  string `yaml:"name"`
-	Index int    `yaml:"index"`
-	Type  string `yaml:"type"`
-	Doc   string `yaml:"doc"`
+	Name     string `yaml:"name"`
+	Index    int    `yaml:"index"`
+	Type     string `yaml:"type"`
+	Doc      string `yaml:"doc"`
+	Required bool   `yaml:"required"`
 }
 
 type YamlPropsByName []*YamlProp
