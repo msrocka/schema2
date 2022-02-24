@@ -167,3 +167,52 @@ func (model *YamlModel) AllPropsOf(class *YamlClass) []*YamlProp {
 	sort.Sort(YamlPropsByName(props))
 	return props
 }
+
+type YamlPropType string
+
+func (t YamlPropType) IsList() bool {
+	return strings.HasPrefix(string(t), "List[")
+}
+
+func (t YamlPropType) UnpackList() YamlPropType {
+	s := strings.TrimPrefix(string(t), "List[")
+	return YamlPropType(strings.TrimSuffix(s, "]"))
+}
+
+func (t YamlPropType) IsRef() bool {
+	return strings.HasPrefix(string(t), "Ref[")
+}
+
+func (t YamlPropType) UnpackRef() YamlPropType {
+	s := strings.TrimPrefix(string(t), "Ref[")
+	return YamlPropType(strings.TrimSuffix(s, "]"))
+}
+
+func (t YamlPropType) ToPython() string {
+	if t.IsList() {
+		param := t.UnpackList()
+		return "List[" + param.ToPython() + "]"
+	}
+	if t.IsRef() {
+		return "Ref"
+	}
+	switch t {
+	case "string", "date", "dateTime":
+		return "str"
+	case "double", "float":
+		return "float"
+	case "int", "integer":
+		return "int"
+	case "bool", "boolean":
+		return "bool"
+	case "GeoJSON":
+		return "Dict[str, Any]"
+	default:
+		if startsWithLower(string(t)) {
+			log.Println("WARNING: unknown primitive type:", t)
+			return "object"
+		} else {
+			return string(t)
+		}
+	}
+}
