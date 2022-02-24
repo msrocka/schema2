@@ -42,7 +42,7 @@ mathjax-support = true
 		if t.IsEnum() {
 			continue
 		}
-		w.file("src/classes/"+t.Name()+".md", w.class(t.Class))
+		w.file("src/classes/"+t.Name()+".md", w.docClassOf(t.Class))
 	}
 
 	w.dir("src/enums")
@@ -50,7 +50,7 @@ mathjax-support = true
 		if t.IsClass() {
 			continue
 		}
-		w.file("src/enums/"+t.Name()+".md", w.enum(t.Enum))
+		w.file("src/enums/"+t.Name()+".md", w.docEnumOf(t.Enum))
 	}
 
 }
@@ -67,13 +67,26 @@ func (w *mdWriter) file(path, content string) {
 }
 
 func (w *mdWriter) summary() string {
+
+	innerTypes := w.innerTypes()
+
 	var buff bytes.Buffer
 	buff.WriteString("# Classes\n\n")
 	for _, t := range w.model.Types {
-		if t.IsEnum() {
+		if t.IsEnum() || innerTypes[t.Name()] != "" {
 			continue
 		}
+
 		buff.WriteString(" - [" + t.Name() + "](./classes/" + t.Name() + ".md)\n")
+		for _, inner := range w.model.Types {
+			if inner.IsEnum() {
+				continue
+			}
+			if innerTypes[inner.Name()] == t.Name() {
+				buff.WriteString("   - [" + inner.Name() + "](./classes/" +
+					inner.Name() + ".md)\n")
+			}
+		}
 	}
 
 	buff.WriteString("\n# Enumerations\n\n")
@@ -87,7 +100,7 @@ func (w *mdWriter) summary() string {
 	return buff.String()
 }
 
-func (w *mdWriter) class(class *YamlClass) string {
+func (w *mdWriter) docClassOf(class *YamlClass) string {
 	var buff bytes.Buffer
 	buff.WriteString("# " + class.Name + "\n\n")
 	buff.WriteString(class.Doc + "\n\n")
@@ -109,7 +122,7 @@ func (w *mdWriter) class(class *YamlClass) string {
 			buff.WriteString("### `" + prop.Name + "`\n\n")
 			buff.WriteString("Inherited from [" + p.Name + "." + prop.Name +
 				"](./" + p.Name + ".md#" + prop.Name + ")\n\n")
-			buff.WriteString(w.propDocOf(prop))
+			buff.WriteString(w.docPropOf(prop))
 		}
 	}
 
@@ -118,13 +131,13 @@ func (w *mdWriter) class(class *YamlClass) string {
 		if prop.Doc != "" {
 			buff.WriteString(prop.Doc + "\n\n")
 		}
-		buff.WriteString(w.propDocOf(prop))
+		buff.WriteString(w.docPropOf(prop))
 	}
 
 	return buff.String()
 }
 
-func (w *mdWriter) propDocOf(prop *YamlProp) string {
+func (w *mdWriter) docPropOf(prop *YamlProp) string {
 	var buff bytes.Buffer
 	if prop.Required {
 		buff.WriteString("* _is required_\n")
@@ -136,7 +149,7 @@ func (w *mdWriter) propDocOf(prop *YamlProp) string {
 	return buff.String()
 }
 
-func (w *mdWriter) enum(enum *YamlEnum) string {
+func (w *mdWriter) docEnumOf(enum *YamlEnum) string {
 	var buff bytes.Buffer
 	buff.WriteString("# " + enum.Name + "\n\n")
 	buff.WriteString(enum.Doc + "\n\n")
@@ -190,4 +203,60 @@ func (w *mdWriter) docTypeOf(yamlType string) string {
 		return "[" + yamlType + "](/classes/" + yamlType + ".md)"
 	}
 
+}
+
+// Returns a map `inner type -> outer type` of types that are only used in
+// in a specific outer type (like Exchange in Processes).
+func (w *mdWriter) innerTypes() map[string]string {
+	m := make(map[string]string)
+	for _, inner := range w.model.Types {
+		if inner.IsEnum() {
+			continue
+		}
+		parent := w.model.ParentOf(inner.Class)
+		if parent == nil || parent.Name == "RootEntity" {
+			continue
+		}
+
+		matches := func(outer *YamlClass) bool {
+			for _, prop := range outer.Props {
+				propType := prop.Type
+				if strings.HasPrefix(propType, "List[") {
+					propType = strings.TrimPrefix(
+						strings.TrimSuffix(propType, "]"), "List[")
+				}
+				if strings.HasPrefix(propType, "Ref[") {
+					propType = strings.TrimPrefix(
+						strings.TrimSuffix(propType, "]"), "Ref[")
+				}
+				if propType == inner.Name() {
+					return true
+				}
+			}
+			return false
+		}
+
+		candidate := ""
+		for _, outer := range w.model.Types {
+			if outer.IsEnum() {
+				continue
+			}
+			if !matches(outer.Class) {
+				continue
+			}
+			if candidate == "" {
+				candidate = outer.Name()
+			} else {
+				candidate = ""
+				break
+			}
+		}
+
+		if candidate != "" {
+			m[inner.Name()] = candidate
+		}
+
+	}
+
+	return m
 }
