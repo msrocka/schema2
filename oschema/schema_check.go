@@ -16,7 +16,7 @@ func checkSchema(args *args) {
 	checkClassHierarchy(model)
 	checkBooleanPrefixes(model)
 	checkPropertyOrder(model)
-	checkPropertyIndices(model)
+	checkFieldIndices(model)
 }
 
 func checkClassHierarchy(model *YamlModel) {
@@ -104,8 +104,31 @@ func checkPropertyOrder(model *YamlModel) {
 	}
 }
 
-func checkPropertyIndices(model *YamlModel) {
+func checkFieldIndices(model *YamlModel) {
 
+	for _, t := range model.Types {
+		if t.IsClass() {
+			continue
+		}
+		usedIndices := make(map[int]bool)
+		for _, item := range t.Enum.Items {
+			idx := item.Index
+			if idx < 1 {
+				fmt.Println("ERROR: invalid index", idx, "for item",
+					item.Name, "in enum", t.Name())
+				continue
+			}
+			if usedIndices[idx] {
+				fmt.Println("ERROR: index", idx, "for item", item.Name,
+					"in enum", t.Name(),
+					"is already used by some other item in that enum")
+				continue
+			}
+			usedIndices[idx] = true
+		}
+	}
+
+	// check properties in classes
 	for _, t := range model.Types {
 		if t.IsEnum() {
 			continue

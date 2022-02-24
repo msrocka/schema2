@@ -88,8 +88,9 @@ type YamlEnum struct {
 }
 
 type YamlEnumItem struct {
-	Name string `yaml:"name"`
-	Doc  string `yaml:"doc"`
+	Name  string `yaml:"name"`
+	Doc   string `yaml:"doc"`
+	Index int    `yaml:"index"`
 }
 
 type YamlModel struct {
