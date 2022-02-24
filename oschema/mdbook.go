@@ -107,16 +107,9 @@ func (w *mdWriter) class(class *YamlClass) string {
 	for _, p := range parents {
 		for _, prop := range p.Props {
 			buff.WriteString("### `" + prop.Name + "`\n\n")
-			buff.WriteString("Inherited from class [" + p.Name +
-				"](./" + p.Name + ".md)\n\n")
-
-			if prop.Required {
-				buff.WriteString("* _is required_\n")
-			} else {
-				buff.WriteString("* _is optional_\n")
-			}
-			buff.WriteString("* _Type:_ " + w.docTypeOf(prop.Type) + "\n")
-			buff.WriteString("* _Proto-Index:_ " + strconv.Itoa(prop.Index) + "\n")
+			buff.WriteString("Inherited from [" + p.Name + "." + prop.Name +
+				"](./" + p.Name + ".md#" + prop.Name + ")\n\n")
+			buff.WriteString(w.propDocOf(prop))
 		}
 	}
 
@@ -125,21 +118,40 @@ func (w *mdWriter) class(class *YamlClass) string {
 		if prop.Doc != "" {
 			buff.WriteString(prop.Doc + "\n\n")
 		}
-
-		if prop.Required {
-			buff.WriteString("* _is required_\n")
-		} else {
-			buff.WriteString("* _is optional_\n")
-		}
-		buff.WriteString("* _Type:_ " + w.docTypeOf(prop.Type) + "\n")
-		buff.WriteString("* _Proto-Index:_ " + strconv.Itoa(prop.Index) + "\n")
+		buff.WriteString(w.propDocOf(prop))
 	}
 
 	return buff.String()
 }
 
+func (w *mdWriter) propDocOf(prop *YamlProp) string {
+	var buff bytes.Buffer
+	if prop.Required {
+		buff.WriteString("* _is required_\n")
+	} else {
+		buff.WriteString("* _is optional_\n")
+	}
+	buff.WriteString("* _Type:_ " + w.docTypeOf(prop.Type) + "\n")
+	buff.WriteString("* _Proto-Index:_ " + strconv.Itoa(prop.Index) + "\n")
+	return buff.String()
+}
+
 func (w *mdWriter) enum(enum *YamlEnum) string {
-	return "# " + enum.Name + "\n\n"
+	var buff bytes.Buffer
+	buff.WriteString("# " + enum.Name + "\n\n")
+	buff.WriteString(enum.Doc + "\n\n")
+
+	buff.WriteString("## Items\n\n")
+
+	for _, item := range enum.Items {
+		buff.WriteString("### `" + item.Name + "`\n\n")
+		if item.Doc != "" {
+			buff.WriteString(item.Doc + "\n\n")
+		}
+		buff.WriteString("* _Proto-Index:_ " + strconv.Itoa(item.Index) + "\n")
+	}
+
+	return buff.String()
 }
 
 func (w *mdWriter) docTypeOf(yamlType string) string {
@@ -159,15 +171,23 @@ func (w *mdWriter) docTypeOf(yamlType string) string {
 	}
 
 	if yamlType == "GeoJSON" {
-		return "[GeoJSON](https://tools.ietf.org/html/rfc7946)"
+		return "`GeoJSON` ([external doc](https://tools.ietf.org/html/rfc7946))"
 	}
 
 	if startsWithLower(yamlType) {
-		return "[" + yamlType + "](http://www.w3.org/TR/xmlschema-2/#" + yamlType + ")"
+		return "`" + yamlType +
+			"` ([external doc](http://www.w3.org/TR/xmlschema-2/#" + yamlType + "))"
 	}
 
-	if w.model.TypeMap[yamlType] == nil {
+	t := w.model.TypeMap[yamlType]
+	if t == nil {
 		log.Println("WARNING: unknown type:", yamlType)
+		return "`" + yamlType + "`"
 	}
-	return "[" + yamlType + "](./" + yamlType + ".md)"
+	if t.IsEnum() {
+		return "[" + yamlType + "](/enums/" + yamlType + ".md)"
+	} else {
+		return "[" + yamlType + "](/classes/" + yamlType + ".md)"
+	}
+
 }
