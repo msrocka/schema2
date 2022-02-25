@@ -22,6 +22,8 @@ func main() {
 		proto(args)
 	case "md", "mdbook", "markdown":
 		writeMarkdownBook(args)
+	case "py", "python":
+		writePythonModule(args)
 	case "check":
 		checkSchema(args)
 	default:
