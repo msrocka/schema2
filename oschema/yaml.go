@@ -99,6 +99,24 @@ type YamlModel struct {
 	TypeMap map[string]*YamlType
 }
 
+func (model *YamlModel) EachEnum(consumer func(enum *YamlEnum)) {
+	for i := range model.Types {
+		t := model.Types[i]
+		if t.IsEnum() {
+			consumer(t.Enum)
+		}
+	}
+}
+
+func (model *YamlModel) EachClass(consumer func(enum *YamlClass)) {
+	for i := range model.Types {
+		t := model.Types[i]
+		if t.IsClass() {
+			consumer(t.Class)
+		}
+	}
+}
+
 func (model *YamlModel) ParentOf(class *YamlClass) *YamlClass {
 	parentName := class.SuperClass
 	if parentName == "" {
