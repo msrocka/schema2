@@ -40,6 +40,8 @@ func (w *pyWriter) writeModel() {
 
 	// imports
 	w.writeln("from enum import Enum")
+	w.writeln("from dataclasses import dataclass")
+	w.writeln("from typing import Dict, List, Any")
 	w.writeln()
 	w.writeln()
 
@@ -61,8 +63,24 @@ func (w *pyWriter) writeEnum(enum *YamlEnum) {
 }
 
 func (w *pyWriter) writeClass(class *YamlClass) {
+	w.writeln("@dataclass")
 	w.writeln("class", class.Name+":")
-	w.writeln("    pass")
+	w.writeln()
+	for _, prop := range w.model.AllPropsOf(class) {
+		propName := prop.Name
+		switch propName {
+		case "@type":
+			continue
+		case "@id":
+			propName = "id"
+		case "from":
+			propName = "from_"
+		}
+		propType := YamlPropType(prop.Type)
+		w.writeln("    " + toSnakeCase(propName) + ": " + propType.ToPython())
+	}
+	w.writeln("    schema_type: str = '" + class.Name + "'")
+
 	w.writeln()
 	w.writeln()
 }
