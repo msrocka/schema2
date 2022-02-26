@@ -27,6 +27,10 @@ func (prop *YamlProp) PyName() string {
 	}
 }
 
+func (prop *YamlProp) IsPrimitive() bool {
+	return startsWithLower(prop.Name)
+}
+
 type YamlPropsByName []*YamlProp
 
 func (s YamlPropsByName) Len() int { return len(s) }

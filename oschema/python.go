@@ -67,17 +67,36 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	b.Writeln("@dataclass")
 	b.Writeln("class", class.Name+":")
 	b.Writeln()
-	for _, prop := range model.AllPropsOf(class) {
+
+	// properties
+	props := model.AllPropsOf(class)
+	for _, prop := range props {
 		if prop.Name == "@type" {
 			continue
 		}
 		propType := YamlPropType(prop.Type)
 		b.Writeln("    " + prop.PyName() + ": " + propType.ToPython())
 	}
-	if model.IsRoot(class) {
-		b.Writeln("    schema_type: str = '" + class.Name + "'")
-	}
 	b.Writeln()
+
+	// to JSON dict
+	b.Writeln("    def to_dict(self) -> Dict[str, Any]:")
+	b.Writeln("        d: Dict[str, Any] = {}")
+	if model.IsRoot(class) {
+		b.Writeln("        d['@type'] = '" + class.Name + "'")
+	}
+	for _, prop := range props {
+		if prop.Name == "@type" {
+			continue
+		}
+		b.Writeln("        if self." + prop.PyName() + ":")
+		if prop.IsPrimitive() {
+			b.Writeln("            d[" + prop.Name + "] = " + prop.PyName())
+		}
+	}
+
+	b.Writeln("        return d")
+
 	return b.String()
 }
 
