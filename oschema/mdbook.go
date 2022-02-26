@@ -136,7 +136,7 @@ func (w *mdWriter) docClassOf(class *YamlClass) string {
 
 	buff.WriteString("## Python class stub\n\n")
 	buff.WriteString("\n\n```python\n\n")
-	buff.WriteString(w.pyClassOf(class))
+	buff.WriteString(w.model.ToPyClass(class))
 	buff.WriteString("\n```\n")
 
 	return buff.String()
@@ -264,20 +264,4 @@ func (w *mdWriter) innerTypes() map[string]string {
 	}
 
 	return m
-}
-
-func (w *mdWriter) pyClassOf(class *YamlClass) string {
-	var buff bytes.Buffer
-
-	buff.WriteString("from typing import *\n\n")
-	buff.WriteString("class " + class.Name + ":\n\n")
-	buff.WriteString("  def __init__(self):\n")
-
-	for _, prop := range class.Props {
-		id := toSnakeCase(prop.Name)
-		pyType := YamlPropType(prop.Type).ToPython()
-		buff.WriteString("    self." + id + ": Optional[" + pyType + "] = None\n")
-	}
-
-	return buff.String()
 }

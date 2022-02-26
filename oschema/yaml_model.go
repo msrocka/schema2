@@ -50,38 +50,6 @@ type YamlClass struct {
 	Props      []*YamlProp `yaml:"properties"`
 }
 
-type YamlProp struct {
-	Name     string `yaml:"name"`
-	Index    int    `yaml:"index"`
-	Type     string `yaml:"type"`
-	Doc      string `yaml:"doc"`
-	Required bool   `yaml:"required"`
-}
-
-type YamlPropsByName []*YamlProp
-
-func (s YamlPropsByName) Len() int { return len(s) }
-func (s YamlPropsByName) Less(i, j int) bool {
-	name_i := s[i].Name
-	name_j := s[j].Name
-	if name_i == name_j {
-		return false
-	}
-	firstOrder := []string{"@type", "@id"}
-	for _, f := range firstOrder {
-		if name_i == f {
-			return true
-		}
-		if name_j == f {
-			return false
-		}
-	}
-	return strings.Compare(name_i, name_j) < 0
-}
-func (s YamlPropsByName) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-
 type YamlEnum struct {
 	Name  string          `yaml:"name"`
 	Doc   string          `yaml:"doc"`
@@ -118,6 +86,9 @@ func (model *YamlModel) EachClass(consumer func(enum *YamlClass)) {
 }
 
 func (model *YamlModel) ParentOf(class *YamlClass) *YamlClass {
+	if class == nil {
+		return nil
+	}
 	parentName := class.SuperClass
 	if parentName == "" {
 		return nil
@@ -172,6 +143,8 @@ func ReadYamlModel(dir string) (*YamlModel, error) {
 	return &model, nil
 }
 
+// AllPropsOf returns all properties of the given class including the properties
+// of all its parent classes.
 func (model *YamlModel) AllPropsOf(class *YamlClass) []*YamlProp {
 	props := make([]*YamlProp, 0, len(class.Props)+1)
 	c := class
@@ -186,51 +159,18 @@ func (model *YamlModel) AllPropsOf(class *YamlClass) []*YamlProp {
 	return props
 }
 
-type YamlPropType string
-
-func (t YamlPropType) IsList() bool {
-	return strings.HasPrefix(string(t), "List[")
-}
-
-func (t YamlPropType) UnpackList() YamlPropType {
-	s := strings.TrimPrefix(string(t), "List[")
-	return YamlPropType(strings.TrimSuffix(s, "]"))
-}
-
-func (t YamlPropType) IsRef() bool {
-	return strings.HasPrefix(string(t), "Ref[")
-}
-
-func (t YamlPropType) UnpackRef() YamlPropType {
-	s := strings.TrimPrefix(string(t), "Ref[")
-	return YamlPropType(strings.TrimSuffix(s, "]"))
-}
-
-func (t YamlPropType) ToPython() string {
-	if t.IsList() {
-		param := t.UnpackList()
-		return "List[" + param.ToPython() + "]"
-	}
-	if t.IsRef() {
-		return "Ref"
-	}
-	switch t {
-	case "string", "date", "dateTime":
-		return "str"
-	case "double", "float":
-		return "float"
-	case "int", "integer":
-		return "int"
-	case "bool", "boolean":
-		return "bool"
-	case "GeoJSON":
-		return "Dict[str, Any]"
-	default:
-		if startsWithLower(string(t)) {
-			log.Println("WARNING: unknown primitive type:", t)
-			return "object"
-		} else {
-			return string(t)
+// IsRoot returns true if the given class is a root entity. This is the case
+// when `RootEntity` is a parent class of the given class.
+func (model *YamlModel) IsRoot(class *YamlClass) bool {
+	c := class
+	for {
+		parent := model.ParentOf(c)
+		if parent == nil {
+			return false
 		}
+		if parent.Name == "RootEntity" {
+			return true
+		}
+		c = parent
 	}
 }

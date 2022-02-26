@@ -48,7 +48,7 @@ func (w *pyWriter) writeModel() {
 	// enums and classes
 	w.model.EachEnum(w.writeEnum)
 	for _, class := range topoSortClasses(w.model) {
-		w.writeClass(class)
+		w.writeln(w.model.ToPyClass(class))
 	}
 }
 
@@ -62,27 +62,23 @@ func (w *pyWriter) writeEnum(enum *YamlEnum) {
 	w.writeln()
 }
 
-func (w *pyWriter) writeClass(class *YamlClass) {
-	w.writeln("@dataclass")
-	w.writeln("class", class.Name+":")
-	w.writeln()
-	for _, prop := range w.model.AllPropsOf(class) {
-		propName := prop.Name
-		switch propName {
-		case "@type":
+func (model *YamlModel) ToPyClass(class *YamlClass) string {
+	b := NewBuffer()
+	b.Writeln("@dataclass")
+	b.Writeln("class", class.Name+":")
+	b.Writeln()
+	for _, prop := range model.AllPropsOf(class) {
+		if prop.Name == "@type" {
 			continue
-		case "@id":
-			propName = "id"
-		case "from":
-			propName = "from_"
 		}
 		propType := YamlPropType(prop.Type)
-		w.writeln("    " + toSnakeCase(propName) + ": " + propType.ToPython())
+		b.Writeln("    " + prop.PyName() + ": " + propType.ToPython())
 	}
-	w.writeln("    schema_type: str = '" + class.Name + "'")
-
-	w.writeln()
-	w.writeln()
+	if model.IsRoot(class) {
+		b.Writeln("    schema_type: str = '" + class.Name + "'")
+	}
+	b.Writeln()
+	return b.String()
 }
 
 func (w *pyWriter) writeln(args ...string) {
