@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -11,6 +13,7 @@ import (
 type mdWriter struct {
 	target string
 	model  *YamlModel
+	args   *args
 }
 
 func writeMarkdownBook(args *args) {
@@ -18,7 +21,10 @@ func writeMarkdownBook(args *args) {
 	check(err, "could not read YAML model")
 	target := args.target
 	mkdir(target)
-	writer := &mdWriter{model: model, target: target}
+	writer := &mdWriter{
+		model:  model,
+		target: target,
+		args:   args}
 	writer.writeBook()
 }
 
@@ -36,6 +42,16 @@ mathjax-support = true
 
 	w.dir("src")
 	w.file("src/SUMMARY.md", w.summary())
+
+	// try to copy the schema README
+	readme := filepath.Join(filepath.Dir(w.args.yamlDir), "README.md")
+	if _, err := os.Stat(readme); err == nil {
+		if text, err := ioutil.ReadFile(readme); err == nil {
+			w.file("src/Intro.md", string(text))
+		} else {
+			log.Println("WARNING: failed to copy", readme)
+		}
+	}
 
 	w.dir("src/classes")
 	for _, t := range w.model.Types {
@@ -68,33 +84,35 @@ func (w *mdWriter) file(path, content string) {
 
 func (w *mdWriter) summary() string {
 
-	innerTypes := w.innerTypes()
+	buff := NewBuffer()
+	buff.Writeln("# Summary\n")
+	buff.Writeln("[Introduction](./Intro.md)")
 
-	var buff bytes.Buffer
-	buff.WriteString("# Classes\n\n")
+	buff.Writeln("# Classes\n")
+	innerTypes := w.innerTypes()
 	for _, t := range w.model.Types {
 		if t.IsEnum() || innerTypes[t.Name()] != "" {
 			continue
 		}
 
-		buff.WriteString(" - [" + t.Name() + "](./classes/" + t.Name() + ".md)\n")
+		buff.Writeln(" - [" + t.Name() + "](./classes/" + t.Name() + ".md)")
 		for _, inner := range w.model.Types {
 			if inner.IsEnum() {
 				continue
 			}
 			if innerTypes[inner.Name()] == t.Name() {
-				buff.WriteString("   - [" + inner.Name() + "](./classes/" +
+				buff.Writeln("   - [" + inner.Name() + "](./classes/" +
 					inner.Name() + ".md)\n")
 			}
 		}
 	}
 
-	buff.WriteString("\n# Enumerations\n\n")
+	buff.Writeln("\n# Enumerations\n")
 	for _, t := range w.model.Types {
 		if t.IsClass() {
 			continue
 		}
-		buff.WriteString(" - [" + t.Name() + "](./enums/" + t.Name() + ".md)\n")
+		buff.Writeln(" - [" + t.Name() + "](./enums/" + t.Name() + ".md)")
 	}
 
 	return buff.String()
@@ -203,9 +221,9 @@ func (w *mdWriter) docTypeOf(yamlType string) string {
 		return "`" + yamlType + "`"
 	}
 	if t.IsEnum() {
-		return "[" + yamlType + "](/enums/" + yamlType + ".md)"
+		return "[" + yamlType + "](../enums/" + yamlType + ".md)"
 	} else {
-		return "[" + yamlType + "](/classes/" + yamlType + ".md)"
+		return "[" + yamlType + "](./" + yamlType + ".md)"
 	}
 
 }
