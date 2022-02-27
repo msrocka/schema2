@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"strings"
 )
 
 type pyWriter struct {
@@ -79,7 +80,7 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	}
 	b.Writeln()
 
-	// to JSON dict
+	// to_dict
 	b.Writeln("    def to_dict(self) -> Dict[str, Any]:")
 	b.Writeln("        d: Dict[str, Any] = {}")
 	if model.IsRoot(class) {
@@ -98,15 +99,36 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 			(propType.IsList() && propType.UnpackList().IsPrimitive()) ||
 			propType == "GeoJSON" {
 			b.Writeln(dictProp + " = " + selfProp)
-
 		} else if propType.IsList() {
 			b.Writeln(dictProp + " = [e.to_dict() for e in " + selfProp + "]")
 		} else {
 			b.Writeln(dictProp + " = " + selfProp + ".to_dict()")
 		}
 	}
-
 	b.Writeln("        return d")
+	b.Writeln()
+
+	// from_dict
+	b.Writeln("    @staticmethod")
+	b.Writeln("    def from_dict(d: Dict[str, Any]) -> '" + class.Name + "':")
+	instance := strings.ToLower(toSnakeCase(class.Name))
+	b.Writeln("        " + instance + " = " + class.Name + "()")
+	for _, prop := range props {
+		b.Writeln("        if v := d.get('" + prop.Name + "'):")
+		propType := prop.PropType()
+		modelProp := "            " + instance + "." + prop.PyName()
+		if propType.IsPrimitive() ||
+			propType.IsEnumOf(model) ||
+			(propType.IsList() && propType.UnpackList().IsPrimitive()) ||
+			propType == "GeoJSON" {
+			b.Writeln(modelProp + " = v")
+		} else if propType.IsList() {
+			u := propType.UnpackList()
+			b.Writeln(modelProp + " = [" + string(u) + ".from_dict(e) for e in v]")
+		} else {
+			b.Writeln(modelProp + " = " + string(propType) + ".from_dict(v)")
+		}
+	}
 
 	return b.String()
 }
