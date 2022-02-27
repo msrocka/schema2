@@ -89,9 +89,20 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 		if prop.Name == "@type" {
 			continue
 		}
-		b.Writeln("        if self." + prop.PyName() + ":")
-		if prop.IsPrimitive() {
-			b.Writeln("            d[" + prop.Name + "] = " + prop.PyName())
+		selfProp := "self." + prop.PyName()
+		dictProp := "            d['" + prop.Name + "']"
+		propType := prop.PropType()
+		b.Writeln("        if " + selfProp + ":")
+		if propType.IsPrimitive() ||
+			propType.IsEnumOf(model) ||
+			(propType.IsList() && propType.UnpackList().IsPrimitive()) ||
+			propType == "GeoJSON" {
+			b.Writeln(dictProp + " = " + selfProp)
+
+		} else if propType.IsList() {
+			b.Writeln(dictProp + " = [e.to_dict() for e in " + selfProp + "]")
+		} else {
+			b.Writeln(dictProp + " = " + selfProp + ".to_dict()")
 		}
 	}
 

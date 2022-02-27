@@ -13,6 +13,10 @@ type YamlProp struct {
 	Required bool   `yaml:"required"`
 }
 
+func (p *YamlProp) PropType() YamlPropType {
+	return YamlPropType(p.Type)
+}
+
 func (prop *YamlProp) PyName() string {
 	name := prop.Name
 	switch name {
@@ -25,10 +29,6 @@ func (prop *YamlProp) PyName() string {
 	default:
 		return toSnakeCase(name)
 	}
-}
-
-func (prop *YamlProp) IsPrimitive() bool {
-	return startsWithLower(prop.Name)
 }
 
 type YamlPropsByName []*YamlProp
@@ -61,6 +61,26 @@ type YamlPropType string
 
 func (t YamlPropType) IsList() bool {
 	return strings.HasPrefix(string(t), "List[")
+}
+
+func (t YamlPropType) IsPrimitive() bool {
+	return startsWithLower(string(t))
+}
+
+func (t YamlPropType) IsEnumOf(model *YamlModel) bool {
+	if t := model.TypeMap[string(t)]; t != nil && t.IsEnum() {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (t YamlPropType) IsClassOf(model *YamlModel) bool {
+	if t := model.TypeMap[string(t)]; t != nil && t.IsClass() {
+		return true
+	} else {
+		return false
+	}
 }
 
 func (t YamlPropType) UnpackList() YamlPropType {
