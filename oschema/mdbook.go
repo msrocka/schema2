@@ -43,13 +43,16 @@ mathjax-support = true
 	w.dir("src")
 	w.file("src/SUMMARY.md", w.summary())
 
-	// try to copy the schema README
-	readme := filepath.Join(filepath.Dir(w.args.yamlDir), "README.md")
-	if _, err := os.Stat(readme); err == nil {
-		if text, err := ioutil.ReadFile(readme); err == nil {
-			w.file("src/Intro.md", string(text))
-		} else {
-			log.Println("WARNING: failed to copy", readme)
+	// try to copy the schema README and CHANGES
+	mds := []string{"README.md", "CHANGES.md"}
+	for _, md := range mds {
+		mdPath := filepath.Join(filepath.Dir(w.args.yamlDir), md)
+		if _, err := os.Stat(mdPath); err == nil {
+			if text, err := ioutil.ReadFile(mdPath); err == nil {
+				w.file("src/"+md, string(text))
+			} else {
+				log.Println("WARNING: failed to copy", mdPath)
+			}
 		}
 	}
 
@@ -86,7 +89,8 @@ func (w *mdWriter) summary() string {
 
 	buff := NewBuffer()
 	buff.Writeln("# Summary\n")
-	buff.Writeln("[Introduction](./Intro.md)")
+	buff.Writeln("[Introduction](./README.md)")
+	buff.Writeln("[Changes](./CHANGES.md)")
 
 	buff.Writeln("# Classes\n")
 	innerTypes := w.innerTypes()
