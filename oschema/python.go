@@ -42,13 +42,16 @@ func (w *pyWriter) writeModel() {
 	// imports
 	w.writeln("from enum import Enum")
 	w.writeln("from dataclasses import dataclass")
-	w.writeln("from typing import Dict, List, Any")
+	w.writeln("from typing import Any, Dict, List, Optional")
 	w.writeln()
 	w.writeln()
 
 	// enums and classes
 	w.model.EachEnum(w.writeEnum)
 	for _, class := range topoSortClasses(w.model) {
+		if w.model.IsAbstract(class) {
+			continue
+		}
 		w.writeln(w.model.ToPyClass(class))
 	}
 }
@@ -76,7 +79,8 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 			continue
 		}
 		propType := YamlPropType(prop.Type)
-		b.Writeln("    " + prop.PyName() + ": " + propType.ToPython())
+		b.Writeln("    " + prop.PyName() +
+			": Optional[" + propType.ToPython() + "] = None")
 	}
 	b.Writeln()
 

@@ -100,6 +100,19 @@ func (model *YamlModel) ParentOf(class *YamlClass) *YamlClass {
 	return parent.Class
 }
 
+// IsAbstract returns true when the given class is an abstract super class.
+// Only the leafs of the class hierarchy are non-abstract classes.
+func (model *YamlModel) IsAbstract(class *YamlClass) bool {
+	for _, t := range model.Types {
+		if t.IsClass() {
+			if t.Class.SuperClass == class.Name {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (model *YamlModel) IsEmpty() bool {
 	return len(model.Types) == 0
 }
