@@ -141,6 +141,9 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	b.Writeln("    def from_dict(d: Dict[str, Any]) -> '" + class.Name + "':")
 	instance := strings.ToLower(toSnakeCase(class.Name))
 	b.Writeln("        " + instance + " = " + class.Name + "()")
+	if class.Name == "Ref" {
+		b.Writeln("        " + instance + ".model_type = d.get('@type', '')")
+	}
 	for _, prop := range props {
 		b.Writeln("        if v := d.get('" + prop.Name + "'):")
 		propType := prop.PropType()
@@ -157,6 +160,7 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 			b.Writeln(modelProp + " = " + string(propType) + ".from_dict(v)")
 		}
 	}
+	b.Writeln("        return " + instance)
 	b.Writeln()
 
 	return b.String()
