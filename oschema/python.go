@@ -102,6 +102,9 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	if model.IsRoot(class) {
 		b.Writeln("        d['@type'] = '" + class.Name + "'")
 	}
+	if class.Name == "Ref" {
+		b.Writeln("        d['@type'] = self.model_type")
+	}
 	for _, prop := range props {
 		if prop.Name == "@type" {
 			continue
