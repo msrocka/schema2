@@ -318,6 +318,12 @@ def location_of(name: str, code: Optional[str] = None) -> Location:
     return location
 
 
+def actor_of(name: str) -> Actor:
+    actor = Actor()
+    _set_base_attributes(actor, name)
+    return actor
+
+
 def parameter_of(name: str, value: Union[str, float],
                  scope=ParameterScope.GLOBAL_SCOPE) -> Parameter:
     """

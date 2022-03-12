@@ -3,6 +3,8 @@ import zipfile
 
 import olca_schema as schema
 
+from typing import Optional, Union
+
 
 class ZipWriter:
 
@@ -26,6 +28,33 @@ class ZipWriter:
         path = f'{folder}/{entity.id}.json'
         data = json.dumps(entity.to_dict(), indent='  ')
         self.__zip.writestr(path, data)
+
+
+class ZipReader:
+
+    def __init__(self, file_name: str):
+        self.__zip = zipfile.ZipFile(file_name, mode='r')
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
+
+    def close(self):
+        self.__zip.close()
+
+    def read(self, class_type: Union[type, str], id: str) \
+            -> Optional[schema.RootEntity]:
+        pass
+
+    def read_actor(self, id: str) -> Optional[schema.Actor]:
+        path = f'actors/{id}.json'
+        if path not in self.__zip.namelist():
+            return None
+        data = self.__zip.read(path)
+        entity_dict = json.loads(data)
+        return schema.Actor.from_dict(entity_dict)
 
 
 def _folder_of_entity(entity: schema.RootEntity):
