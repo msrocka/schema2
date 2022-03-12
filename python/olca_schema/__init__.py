@@ -5,9 +5,6 @@ from .schema import *
 
 from typing import Optional, TypeVar, Union
 
-T = TypeVar('T')
-
-RootEntity = Process | Flow
 
 def ref(model_type: Union[T, str], uid: str, name: Optional[str] = None) -> Ref:
     """

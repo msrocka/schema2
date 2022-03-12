@@ -42,7 +42,7 @@ func (w *pyWriter) writeModel() {
 	// imports
 	w.writeln("from enum import Enum")
 	w.writeln("from dataclasses import dataclass")
-	w.writeln("from typing import Any, Dict, List, Optional")
+	w.writeln("from typing import Any, Dict, List, Optional, Union")
 	w.writeln()
 	w.writeln()
 
@@ -54,6 +54,15 @@ func (w *pyWriter) writeModel() {
 		}
 		w.writeln(w.model.ToPyClass(class))
 	}
+
+	// write RootEntity type
+	w.writeln("RootEntity = Union[")
+	w.model.EachClass(func(class *YamlClass) {
+		if w.model.IsRoot(class) {
+			w.writeln("    " + class.Name + ",")
+		}
+	})
+	w.writeln("]")
 }
 
 func (w *pyWriter) writeEnum(enum *YamlEnum) {
@@ -81,6 +90,9 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 		propType := YamlPropType(prop.Type)
 		b.Writeln("    " + prop.PyName() +
 			": Optional[" + propType.ToPython() + "] = None")
+	}
+	if class.Name == "Ref" {
+		b.Writeln("    model_type: str = ''")
 	}
 	b.Writeln()
 
@@ -112,6 +124,15 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	b.Writeln("        return d")
 	b.Writeln()
 
+	if model.IsRoot(class) || class.Name == "Unit" {
+		b.Writeln("    def to_ref(self) -> 'Ref':")
+		b.Writeln("        ref = Ref(id=self.id, name=self.name)")
+		b.Writeln("        ref.category = self.category")
+		b.Writeln("        ref.model_type = '" + class.Name + "'")
+		b.Writeln("        return ref")
+		b.Writeln()
+	}
+
 	// from_dict
 	b.Writeln("    @staticmethod")
 	b.Writeln("    def from_dict(d: Dict[str, Any]) -> '" + class.Name + "':")
@@ -133,18 +154,23 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 			b.Writeln(modelProp + " = " + string(propType) + ".from_dict(v)")
 		}
 	}
+	b.Writeln()
 
 	return b.String()
 }
 
 func (w *pyWriter) writeln(args ...string) {
+	w.write(args...)
+	w.buff.WriteRune('\n')
+}
+
+func (w *pyWriter) write(args ...string) {
 	for i, arg := range args {
 		if i > 0 {
 			w.buff.WriteRune(' ')
 		}
 		w.buff.WriteString(arg)
 	}
-	w.buff.WriteRune('\n')
 }
 
 func topoSortClasses(model *YamlModel) []*YamlClass {

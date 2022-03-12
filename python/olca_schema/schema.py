@@ -6,7 +6,7 @@
 
 from enum import Enum
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 
 class AllocationType(Enum):
@@ -99,6 +99,93 @@ class UncertaintyType(Enum):
 
 
 @dataclass
+class ExchangeRef:
+
+    internal_id: Optional[int] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.internal_id:
+            d['internalId'] = self.internal_id
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'ExchangeRef':
+        exchange_ref = ExchangeRef()
+        if v := d.get('@type'):
+            exchange_ref.schema_type = v
+        if v := d.get('internalId'):
+            exchange_ref.internal_id = v
+
+
+@dataclass
+class Category:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    model_type: Optional[ModelType] = None
+    name: Optional[str] = None
+    tags: Optional[List[str]] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'Category'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.model_type:
+            d['modelType'] = self.model_type
+        if self.name:
+            d['name'] = self.name
+        if self.tags:
+            d['tags'] = self.tags
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Category'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Category':
+        category = Category()
+        if v := d.get('@type'):
+            category.schema_type = v
+        if v := d.get('@id'):
+            category.id = v
+        if v := d.get('category'):
+            category.category = v
+        if v := d.get('description'):
+            category.description = v
+        if v := d.get('lastChange'):
+            category.last_change = v
+        if v := d.get('library'):
+            category.library = v
+        if v := d.get('modelType'):
+            category.model_type = v
+        if v := d.get('name'):
+            category.name = v
+        if v := d.get('tags'):
+            category.tags = v
+        if v := d.get('version'):
+            category.version = v
+
+
+@dataclass
 class Source:
 
     id: Optional[str] = None
@@ -143,6 +230,12 @@ class Source:
             d['year'] = self.year
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Source'
+        return ref
+
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> 'Source':
         source = Source()
@@ -173,58 +266,88 @@ class Source:
         if v := d.get('year'):
             source.year = v
 
-@dataclass
-class DQScore:
 
+@dataclass
+class Location:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    code: Optional[str] = None
     description: Optional[str] = None
-    label: Optional[str] = None
-    position: Optional[int] = None
-    uncertainty: Optional[float] = None
+    geometry: Optional[Dict[str, Any]] = None
+    last_change: Optional[str] = None
+    latitude: Optional[float] = None
+    library: Optional[str] = None
+    longitude: Optional[float] = None
+    name: Optional[str] = None
+    tags: Optional[List[str]] = None
+    version: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
+        d['@type'] = 'Location'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.code:
+            d['code'] = self.code
         if self.description:
             d['description'] = self.description
-        if self.label:
-            d['label'] = self.label
-        if self.position:
-            d['position'] = self.position
-        if self.uncertainty:
-            d['uncertainty'] = self.uncertainty
+        if self.geometry:
+            d['geometry'] = self.geometry
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.latitude:
+            d['latitude'] = self.latitude
+        if self.library:
+            d['library'] = self.library
+        if self.longitude:
+            d['longitude'] = self.longitude
+        if self.name:
+            d['name'] = self.name
+        if self.tags:
+            d['tags'] = self.tags
+        if self.version:
+            d['version'] = self.version
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Location'
+        return ref
+
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'DQScore':
-        d_q_score = DQScore()
+    def from_dict(d: Dict[str, Any]) -> 'Location':
+        location = Location()
         if v := d.get('@type'):
-            d_q_score.schema_type = v
+            location.schema_type = v
+        if v := d.get('@id'):
+            location.id = v
+        if v := d.get('category'):
+            location.category = v
+        if v := d.get('code'):
+            location.code = v
         if v := d.get('description'):
-            d_q_score.description = v
-        if v := d.get('label'):
-            d_q_score.label = v
-        if v := d.get('position'):
-            d_q_score.position = v
-        if v := d.get('uncertainty'):
-            d_q_score.uncertainty = v
+            location.description = v
+        if v := d.get('geometry'):
+            location.geometry = v
+        if v := d.get('lastChange'):
+            location.last_change = v
+        if v := d.get('latitude'):
+            location.latitude = v
+        if v := d.get('library'):
+            location.library = v
+        if v := d.get('longitude'):
+            location.longitude = v
+        if v := d.get('name'):
+            location.name = v
+        if v := d.get('tags'):
+            location.tags = v
+        if v := d.get('version'):
+            location.version = v
 
-@dataclass
-class ExchangeRef:
-
-    internal_id: Optional[int] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.internal_id:
-            d['internalId'] = self.internal_id
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ExchangeRef':
-        exchange_ref = ExchangeRef()
-        if v := d.get('@type'):
-            exchange_ref.schema_type = v
-        if v := d.get('internalId'):
-            exchange_ref.internal_id = v
 
 @dataclass
 class Ref:
@@ -238,6 +361,7 @@ class Ref:
     name: Optional[str] = None
     process_type: Optional[ProcessType] = None
     ref_unit: Optional[str] = None
+    model_type: str = ''
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -285,285 +409,71 @@ class Ref:
         if v := d.get('refUnit'):
             ref.ref_unit = v
 
-@dataclass
-class Location:
 
-    id: Optional[str] = None
-    category: Optional[str] = None
-    code: Optional[str] = None
+@dataclass
+class ImpactResult:
+
+    amount: Optional[float] = None
     description: Optional[str] = None
-    geometry: Optional[Dict[str, Any]] = None
-    last_change: Optional[str] = None
-    latitude: Optional[float] = None
-    library: Optional[str] = None
-    longitude: Optional[float] = None
-    name: Optional[str] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
+    indicator: Optional[Ref] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        d['@type'] = 'Location'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.code:
-            d['code'] = self.code
+        if self.amount:
+            d['amount'] = self.amount
         if self.description:
             d['description'] = self.description
-        if self.geometry:
-            d['geometry'] = self.geometry
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.latitude:
-            d['latitude'] = self.latitude
-        if self.library:
-            d['library'] = self.library
-        if self.longitude:
-            d['longitude'] = self.longitude
-        if self.name:
-            d['name'] = self.name
-        if self.tags:
-            d['tags'] = self.tags
-        if self.version:
-            d['version'] = self.version
+        if self.indicator:
+            d['indicator'] = self.indicator.to_dict()
         return d
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Location':
-        location = Location()
+    def from_dict(d: Dict[str, Any]) -> 'ImpactResult':
+        impact_result = ImpactResult()
         if v := d.get('@type'):
-            location.schema_type = v
-        if v := d.get('@id'):
-            location.id = v
-        if v := d.get('category'):
-            location.category = v
-        if v := d.get('code'):
-            location.code = v
+            impact_result.schema_type = v
+        if v := d.get('amount'):
+            impact_result.amount = v
         if v := d.get('description'):
-            location.description = v
-        if v := d.get('geometry'):
-            location.geometry = v
-        if v := d.get('lastChange'):
-            location.last_change = v
-        if v := d.get('latitude'):
-            location.latitude = v
-        if v := d.get('library'):
-            location.library = v
-        if v := d.get('longitude'):
-            location.longitude = v
-        if v := d.get('name'):
-            location.name = v
-        if v := d.get('tags'):
-            location.tags = v
-        if v := d.get('version'):
-            location.version = v
+            impact_result.description = v
+        if v := d.get('indicator'):
+            impact_result.indicator = Ref[ImpactCategory].from_dict(v)
+
 
 @dataclass
-class Category:
+class SocialIndicator:
 
     id: Optional[str] = None
+    activity_quantity: Optional[Ref] = None
+    activity_unit: Optional[Ref] = None
+    activity_variable: Optional[str] = None
     category: Optional[str] = None
     description: Optional[str] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    model_type: Optional[ModelType] = None
-    name: Optional[str] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'Category'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.model_type:
-            d['modelType'] = self.model_type
-        if self.name:
-            d['name'] = self.name
-        if self.tags:
-            d['tags'] = self.tags
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Category':
-        category = Category()
-        if v := d.get('@type'):
-            category.schema_type = v
-        if v := d.get('@id'):
-            category.id = v
-        if v := d.get('category'):
-            category.category = v
-        if v := d.get('description'):
-            category.description = v
-        if v := d.get('lastChange'):
-            category.last_change = v
-        if v := d.get('library'):
-            category.library = v
-        if v := d.get('modelType'):
-            category.model_type = v
-        if v := d.get('name'):
-            category.name = v
-        if v := d.get('tags'):
-            category.tags = v
-        if v := d.get('version'):
-            category.version = v
-
-@dataclass
-class SocialAspect:
-
-    activity_value: Optional[float] = None
-    comment: Optional[str] = None
-    quality: Optional[str] = None
-    raw_amount: Optional[str] = None
-    risk_level: Optional[RiskLevel] = None
-    social_indicator: Optional[Ref] = None
-    source: Optional[Ref] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.activity_value:
-            d['activityValue'] = self.activity_value
-        if self.comment:
-            d['comment'] = self.comment
-        if self.quality:
-            d['quality'] = self.quality
-        if self.raw_amount:
-            d['rawAmount'] = self.raw_amount
-        if self.risk_level:
-            d['riskLevel'] = self.risk_level
-        if self.social_indicator:
-            d['socialIndicator'] = self.social_indicator.to_dict()
-        if self.source:
-            d['source'] = self.source.to_dict()
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'SocialAspect':
-        social_aspect = SocialAspect()
-        if v := d.get('@type'):
-            social_aspect.schema_type = v
-        if v := d.get('activityValue'):
-            social_aspect.activity_value = v
-        if v := d.get('comment'):
-            social_aspect.comment = v
-        if v := d.get('quality'):
-            social_aspect.quality = v
-        if v := d.get('rawAmount'):
-            social_aspect.raw_amount = v
-        if v := d.get('riskLevel'):
-            social_aspect.risk_level = v
-        if v := d.get('socialIndicator'):
-            social_aspect.social_indicator = Ref[SocialIndicator].from_dict(v)
-        if v := d.get('source'):
-            social_aspect.source = Ref[Source].from_dict(v)
-
-@dataclass
-class FlowMapRef:
-
-    flow: Optional[Ref] = None
-    flow_property: Optional[Ref] = None
-    provider: Optional[Ref] = None
-    unit: Optional[Ref] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.flow:
-            d['flow'] = self.flow.to_dict()
-        if self.flow_property:
-            d['flowProperty'] = self.flow_property.to_dict()
-        if self.provider:
-            d['provider'] = self.provider.to_dict()
-        if self.unit:
-            d['unit'] = self.unit.to_dict()
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'FlowMapRef':
-        flow_map_ref = FlowMapRef()
-        if v := d.get('@type'):
-            flow_map_ref.schema_type = v
-        if v := d.get('flow'):
-            flow_map_ref.flow = Ref[Flow].from_dict(v)
-        if v := d.get('flowProperty'):
-            flow_map_ref.flow_property = Ref[FlowProperty].from_dict(v)
-        if v := d.get('provider'):
-            flow_map_ref.provider = Ref[Process].from_dict(v)
-        if v := d.get('unit'):
-            flow_map_ref.unit = Ref[Unit].from_dict(v)
-
-@dataclass
-class EpdModule:
-
-    name: Optional[str] = None
-    result: Optional[Ref] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.name:
-            d['name'] = self.name
-        if self.result:
-            d['result'] = self.result.to_dict()
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'EpdModule':
-        epd_module = EpdModule()
-        if v := d.get('@type'):
-            epd_module.schema_type = v
-        if v := d.get('name'):
-            epd_module.name = v
-        if v := d.get('result'):
-            epd_module.result = Ref[Result].from_dict(v)
-
-@dataclass
-class Actor:
-
-    id: Optional[str] = None
-    address: Optional[str] = None
-    category: Optional[str] = None
-    city: Optional[str] = None
-    country: Optional[str] = None
-    description: Optional[str] = None
-    email: Optional[str] = None
+    evaluation_scheme: Optional[str] = None
     last_change: Optional[str] = None
     library: Optional[str] = None
     name: Optional[str] = None
     tags: Optional[List[str]] = None
-    telefax: Optional[str] = None
-    telephone: Optional[str] = None
+    unit_of_measurement: Optional[str] = None
     version: Optional[str] = None
-    website: Optional[str] = None
-    zip_code: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        d['@type'] = 'Actor'
+        d['@type'] = 'SocialIndicator'
         if self.id:
             d['@id'] = self.id
-        if self.address:
-            d['address'] = self.address
+        if self.activity_quantity:
+            d['activityQuantity'] = self.activity_quantity.to_dict()
+        if self.activity_unit:
+            d['activityUnit'] = self.activity_unit.to_dict()
+        if self.activity_variable:
+            d['activityVariable'] = self.activity_variable
         if self.category:
             d['category'] = self.category
-        if self.city:
-            d['city'] = self.city
-        if self.country:
-            d['country'] = self.country
         if self.description:
             d['description'] = self.description
-        if self.email:
-            d['email'] = self.email
+        if self.evaluation_scheme:
+            d['evaluationScheme'] = self.evaluation_scheme
         if self.last_change:
             d['lastChange'] = self.last_change
         if self.library:
@@ -572,84 +482,50 @@ class Actor:
             d['name'] = self.name
         if self.tags:
             d['tags'] = self.tags
-        if self.telefax:
-            d['telefax'] = self.telefax
-        if self.telephone:
-            d['telephone'] = self.telephone
+        if self.unit_of_measurement:
+            d['unitOfMeasurement'] = self.unit_of_measurement
         if self.version:
             d['version'] = self.version
-        if self.website:
-            d['website'] = self.website
-        if self.zip_code:
-            d['zipCode'] = self.zip_code
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'SocialIndicator'
+        return ref
+
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Actor':
-        actor = Actor()
+    def from_dict(d: Dict[str, Any]) -> 'SocialIndicator':
+        social_indicator = SocialIndicator()
         if v := d.get('@type'):
-            actor.schema_type = v
+            social_indicator.schema_type = v
         if v := d.get('@id'):
-            actor.id = v
-        if v := d.get('address'):
-            actor.address = v
+            social_indicator.id = v
+        if v := d.get('activityQuantity'):
+            social_indicator.activity_quantity = Ref[FlowProperty].from_dict(v)
+        if v := d.get('activityUnit'):
+            social_indicator.activity_unit = Ref[Unit].from_dict(v)
+        if v := d.get('activityVariable'):
+            social_indicator.activity_variable = v
         if v := d.get('category'):
-            actor.category = v
-        if v := d.get('city'):
-            actor.city = v
-        if v := d.get('country'):
-            actor.country = v
+            social_indicator.category = v
         if v := d.get('description'):
-            actor.description = v
-        if v := d.get('email'):
-            actor.email = v
+            social_indicator.description = v
+        if v := d.get('evaluationScheme'):
+            social_indicator.evaluation_scheme = v
         if v := d.get('lastChange'):
-            actor.last_change = v
+            social_indicator.last_change = v
         if v := d.get('library'):
-            actor.library = v
+            social_indicator.library = v
         if v := d.get('name'):
-            actor.name = v
+            social_indicator.name = v
         if v := d.get('tags'):
-            actor.tags = v
-        if v := d.get('telefax'):
-            actor.telefax = v
-        if v := d.get('telephone'):
-            actor.telephone = v
+            social_indicator.tags = v
+        if v := d.get('unitOfMeasurement'):
+            social_indicator.unit_of_measurement = v
         if v := d.get('version'):
-            actor.version = v
-        if v := d.get('website'):
-            actor.website = v
-        if v := d.get('zipCode'):
-            actor.zip_code = v
+            social_indicator.version = v
 
-@dataclass
-class FlowMapEntry:
-
-    conversion_factor: Optional[float] = None
-    from_: Optional[FlowMapRef] = None
-    to: Optional[FlowMapRef] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.conversion_factor:
-            d['conversionFactor'] = self.conversion_factor
-        if self.from_:
-            d['from'] = self.from_.to_dict()
-        if self.to:
-            d['to'] = self.to.to_dict()
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'FlowMapEntry':
-        flow_map_entry = FlowMapEntry()
-        if v := d.get('@type'):
-            flow_map_entry.schema_type = v
-        if v := d.get('conversionFactor'):
-            flow_map_entry.conversion_factor = v
-        if v := d.get('from'):
-            flow_map_entry.from_ = FlowMapRef.from_dict(v)
-        if v := d.get('to'):
-            flow_map_entry.to = FlowMapRef.from_dict(v)
 
 @dataclass
 class FlowPropertyFactor:
@@ -680,132 +556,6 @@ class FlowPropertyFactor:
         if v := d.get('isReferenceFlowProperty'):
             flow_property_factor.is_reference_flow_property = v
 
-@dataclass
-class ProcessLink:
-
-    exchange: Optional[ExchangeRef] = None
-    flow: Optional[Ref] = None
-    process: Optional[Ref] = None
-    provider: Optional[Ref] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.exchange:
-            d['exchange'] = self.exchange.to_dict()
-        if self.flow:
-            d['flow'] = self.flow.to_dict()
-        if self.process:
-            d['process'] = self.process.to_dict()
-        if self.provider:
-            d['provider'] = self.provider.to_dict()
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ProcessLink':
-        process_link = ProcessLink()
-        if v := d.get('@type'):
-            process_link.schema_type = v
-        if v := d.get('exchange'):
-            process_link.exchange = ExchangeRef.from_dict(v)
-        if v := d.get('flow'):
-            process_link.flow = Ref[Flow].from_dict(v)
-        if v := d.get('process'):
-            process_link.process = Ref[Process].from_dict(v)
-        if v := d.get('provider'):
-            process_link.provider = Ref.from_dict(v)
-
-@dataclass
-class AllocationFactor:
-
-    allocation_type: Optional[AllocationType] = None
-    exchange: Optional[ExchangeRef] = None
-    formula: Optional[str] = None
-    product: Optional[Ref] = None
-    value: Optional[float] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.allocation_type:
-            d['allocationType'] = self.allocation_type
-        if self.exchange:
-            d['exchange'] = self.exchange.to_dict()
-        if self.formula:
-            d['formula'] = self.formula
-        if self.product:
-            d['product'] = self.product.to_dict()
-        if self.value:
-            d['value'] = self.value
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'AllocationFactor':
-        allocation_factor = AllocationFactor()
-        if v := d.get('@type'):
-            allocation_factor.schema_type = v
-        if v := d.get('allocationType'):
-            allocation_factor.allocation_type = v
-        if v := d.get('exchange'):
-            allocation_factor.exchange = ExchangeRef.from_dict(v)
-        if v := d.get('formula'):
-            allocation_factor.formula = v
-        if v := d.get('product'):
-            allocation_factor.product = Ref[Flow].from_dict(v)
-        if v := d.get('value'):
-            allocation_factor.value = v
-
-@dataclass
-class FlowResult:
-
-    amount: Optional[float] = None
-    description: Optional[str] = None
-    flow: Optional[Ref] = None
-    flow_property: Optional[Ref] = None
-    is_input: Optional[bool] = None
-    is_reference_flow: Optional[bool] = None
-    location: Optional[Ref] = None
-    unit: Optional[Ref] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.amount:
-            d['amount'] = self.amount
-        if self.description:
-            d['description'] = self.description
-        if self.flow:
-            d['flow'] = self.flow.to_dict()
-        if self.flow_property:
-            d['flowProperty'] = self.flow_property.to_dict()
-        if self.is_input:
-            d['isInput'] = self.is_input
-        if self.is_reference_flow:
-            d['isReferenceFlow'] = self.is_reference_flow
-        if self.location:
-            d['location'] = self.location.to_dict()
-        if self.unit:
-            d['unit'] = self.unit.to_dict()
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'FlowResult':
-        flow_result = FlowResult()
-        if v := d.get('@type'):
-            flow_result.schema_type = v
-        if v := d.get('amount'):
-            flow_result.amount = v
-        if v := d.get('description'):
-            flow_result.description = v
-        if v := d.get('flow'):
-            flow_result.flow = Ref[Flow].from_dict(v)
-        if v := d.get('flowProperty'):
-            flow_result.flow_property = Ref[FlowProperty].from_dict(v)
-        if v := d.get('isInput'):
-            flow_result.is_input = v
-        if v := d.get('isReferenceFlow'):
-            flow_result.is_reference_flow = v
-        if v := d.get('location'):
-            flow_result.location = Ref[Location].from_dict(v)
-        if v := d.get('unit'):
-            flow_result.unit = Ref[Unit].from_dict(v)
 
 @dataclass
 class ProcessDocumentation:
@@ -941,139 +691,44 @@ class ProcessDocumentation:
         if v := d.get('validUntil'):
             process_documentation.valid_until = v
 
-@dataclass
-class DQIndicator:
-
-    name: Optional[str] = None
-    position: Optional[int] = None
-    scores: Optional[List[DQScore]] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.name:
-            d['name'] = self.name
-        if self.position:
-            d['position'] = self.position
-        if self.scores:
-            d['scores'] = [e.to_dict() for e in self.scores]
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'DQIndicator':
-        d_q_indicator = DQIndicator()
-        if v := d.get('@type'):
-            d_q_indicator.schema_type = v
-        if v := d.get('name'):
-            d_q_indicator.name = v
-        if v := d.get('position'):
-            d_q_indicator.position = v
-        if v := d.get('scores'):
-            d_q_indicator.scores = [DQScore.from_dict(e) for e in v]
 
 @dataclass
-class DQSystem:
+class Actor:
 
     id: Optional[str] = None
+    address: Optional[str] = None
     category: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
     description: Optional[str] = None
-    has_uncertainties: Optional[bool] = None
-    indicators: Optional[List[DQIndicator]] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    source: Optional[Ref] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'DQSystem'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.has_uncertainties:
-            d['hasUncertainties'] = self.has_uncertainties
-        if self.indicators:
-            d['indicators'] = [e.to_dict() for e in self.indicators]
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.source:
-            d['source'] = self.source.to_dict()
-        if self.tags:
-            d['tags'] = self.tags
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'DQSystem':
-        d_q_system = DQSystem()
-        if v := d.get('@type'):
-            d_q_system.schema_type = v
-        if v := d.get('@id'):
-            d_q_system.id = v
-        if v := d.get('category'):
-            d_q_system.category = v
-        if v := d.get('description'):
-            d_q_system.description = v
-        if v := d.get('hasUncertainties'):
-            d_q_system.has_uncertainties = v
-        if v := d.get('indicators'):
-            d_q_system.indicators = [DQIndicator.from_dict(e) for e in v]
-        if v := d.get('lastChange'):
-            d_q_system.last_change = v
-        if v := d.get('library'):
-            d_q_system.library = v
-        if v := d.get('name'):
-            d_q_system.name = v
-        if v := d.get('source'):
-            d_q_system.source = Ref[Source].from_dict(v)
-        if v := d.get('tags'):
-            d_q_system.tags = v
-        if v := d.get('version'):
-            d_q_system.version = v
-
-@dataclass
-class SocialIndicator:
-
-    id: Optional[str] = None
-    activity_quantity: Optional[Ref] = None
-    activity_unit: Optional[Ref] = None
-    activity_variable: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    evaluation_scheme: Optional[str] = None
+    email: Optional[str] = None
     last_change: Optional[str] = None
     library: Optional[str] = None
     name: Optional[str] = None
     tags: Optional[List[str]] = None
-    unit_of_measurement: Optional[str] = None
+    telefax: Optional[str] = None
+    telephone: Optional[str] = None
     version: Optional[str] = None
+    website: Optional[str] = None
+    zip_code: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        d['@type'] = 'SocialIndicator'
+        d['@type'] = 'Actor'
         if self.id:
             d['@id'] = self.id
-        if self.activity_quantity:
-            d['activityQuantity'] = self.activity_quantity.to_dict()
-        if self.activity_unit:
-            d['activityUnit'] = self.activity_unit.to_dict()
-        if self.activity_variable:
-            d['activityVariable'] = self.activity_variable
+        if self.address:
+            d['address'] = self.address
         if self.category:
             d['category'] = self.category
+        if self.city:
+            d['city'] = self.city
+        if self.country:
+            d['country'] = self.country
         if self.description:
             d['description'] = self.description
-        if self.evaluation_scheme:
-            d['evaluationScheme'] = self.evaluation_scheme
+        if self.email:
+            d['email'] = self.email
         if self.last_change:
             d['lastChange'] = self.last_change
         if self.library:
@@ -1082,171 +737,192 @@ class SocialIndicator:
             d['name'] = self.name
         if self.tags:
             d['tags'] = self.tags
-        if self.unit_of_measurement:
-            d['unitOfMeasurement'] = self.unit_of_measurement
+        if self.telefax:
+            d['telefax'] = self.telefax
+        if self.telephone:
+            d['telephone'] = self.telephone
         if self.version:
             d['version'] = self.version
+        if self.website:
+            d['website'] = self.website
+        if self.zip_code:
+            d['zipCode'] = self.zip_code
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Actor'
+        return ref
+
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'SocialIndicator':
-        social_indicator = SocialIndicator()
+    def from_dict(d: Dict[str, Any]) -> 'Actor':
+        actor = Actor()
         if v := d.get('@type'):
-            social_indicator.schema_type = v
+            actor.schema_type = v
         if v := d.get('@id'):
-            social_indicator.id = v
-        if v := d.get('activityQuantity'):
-            social_indicator.activity_quantity = Ref[FlowProperty].from_dict(v)
-        if v := d.get('activityUnit'):
-            social_indicator.activity_unit = Ref[Unit].from_dict(v)
-        if v := d.get('activityVariable'):
-            social_indicator.activity_variable = v
+            actor.id = v
+        if v := d.get('address'):
+            actor.address = v
         if v := d.get('category'):
-            social_indicator.category = v
+            actor.category = v
+        if v := d.get('city'):
+            actor.city = v
+        if v := d.get('country'):
+            actor.country = v
         if v := d.get('description'):
-            social_indicator.description = v
-        if v := d.get('evaluationScheme'):
-            social_indicator.evaluation_scheme = v
+            actor.description = v
+        if v := d.get('email'):
+            actor.email = v
         if v := d.get('lastChange'):
-            social_indicator.last_change = v
+            actor.last_change = v
         if v := d.get('library'):
-            social_indicator.library = v
+            actor.library = v
         if v := d.get('name'):
-            social_indicator.name = v
+            actor.name = v
         if v := d.get('tags'):
-            social_indicator.tags = v
-        if v := d.get('unitOfMeasurement'):
-            social_indicator.unit_of_measurement = v
+            actor.tags = v
+        if v := d.get('telefax'):
+            actor.telefax = v
+        if v := d.get('telephone'):
+            actor.telephone = v
         if v := d.get('version'):
-            social_indicator.version = v
+            actor.version = v
+        if v := d.get('website'):
+            actor.website = v
+        if v := d.get('zipCode'):
+            actor.zip_code = v
+
 
 @dataclass
-class ImpactResult:
+class AllocationFactor:
 
-    amount: Optional[float] = None
-    description: Optional[str] = None
-    indicator: Optional[Ref] = None
+    allocation_type: Optional[AllocationType] = None
+    exchange: Optional[ExchangeRef] = None
+    formula: Optional[str] = None
+    product: Optional[Ref] = None
+    value: Optional[float] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        if self.amount:
-            d['amount'] = self.amount
-        if self.description:
-            d['description'] = self.description
-        if self.indicator:
-            d['indicator'] = self.indicator.to_dict()
+        if self.allocation_type:
+            d['allocationType'] = self.allocation_type
+        if self.exchange:
+            d['exchange'] = self.exchange.to_dict()
+        if self.formula:
+            d['formula'] = self.formula
+        if self.product:
+            d['product'] = self.product.to_dict()
+        if self.value:
+            d['value'] = self.value
         return d
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ImpactResult':
-        impact_result = ImpactResult()
+    def from_dict(d: Dict[str, Any]) -> 'AllocationFactor':
+        allocation_factor = AllocationFactor()
         if v := d.get('@type'):
-            impact_result.schema_type = v
-        if v := d.get('amount'):
-            impact_result.amount = v
-        if v := d.get('description'):
-            impact_result.description = v
-        if v := d.get('indicator'):
-            impact_result.indicator = Ref[ImpactCategory].from_dict(v)
+            allocation_factor.schema_type = v
+        if v := d.get('allocationType'):
+            allocation_factor.allocation_type = v
+        if v := d.get('exchange'):
+            allocation_factor.exchange = ExchangeRef.from_dict(v)
+        if v := d.get('formula'):
+            allocation_factor.formula = v
+        if v := d.get('product'):
+            allocation_factor.product = Ref[Flow].from_dict(v)
+        if v := d.get('value'):
+            allocation_factor.value = v
+
 
 @dataclass
-class EpdProduct:
+class FlowResult:
 
     amount: Optional[float] = None
+    description: Optional[str] = None
     flow: Optional[Ref] = None
     flow_property: Optional[Ref] = None
+    is_input: Optional[bool] = None
+    is_reference_flow: Optional[bool] = None
+    location: Optional[Ref] = None
     unit: Optional[Ref] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         if self.amount:
             d['amount'] = self.amount
+        if self.description:
+            d['description'] = self.description
         if self.flow:
             d['flow'] = self.flow.to_dict()
         if self.flow_property:
             d['flowProperty'] = self.flow_property.to_dict()
+        if self.is_input:
+            d['isInput'] = self.is_input
+        if self.is_reference_flow:
+            d['isReferenceFlow'] = self.is_reference_flow
+        if self.location:
+            d['location'] = self.location.to_dict()
         if self.unit:
             d['unit'] = self.unit.to_dict()
         return d
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'EpdProduct':
-        epd_product = EpdProduct()
+    def from_dict(d: Dict[str, Any]) -> 'FlowResult':
+        flow_result = FlowResult()
         if v := d.get('@type'):
-            epd_product.schema_type = v
+            flow_result.schema_type = v
         if v := d.get('amount'):
-            epd_product.amount = v
+            flow_result.amount = v
+        if v := d.get('description'):
+            flow_result.description = v
         if v := d.get('flow'):
-            epd_product.flow = Ref[Flow].from_dict(v)
+            flow_result.flow = Ref[Flow].from_dict(v)
         if v := d.get('flowProperty'):
-            epd_product.flow_property = Ref[FlowProperty].from_dict(v)
+            flow_result.flow_property = Ref[FlowProperty].from_dict(v)
+        if v := d.get('isInput'):
+            flow_result.is_input = v
+        if v := d.get('isReferenceFlow'):
+            flow_result.is_reference_flow = v
+        if v := d.get('location'):
+            flow_result.location = Ref[Location].from_dict(v)
         if v := d.get('unit'):
-            epd_product.unit = Ref[Unit].from_dict(v)
+            flow_result.unit = Ref[Unit].from_dict(v)
+
 
 @dataclass
-class FlowProperty:
+class ProcessLink:
 
-    id: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    flow_property_type: Optional[FlowPropertyType] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    tags: Optional[List[str]] = None
-    unit_group: Optional[Ref] = None
-    version: Optional[str] = None
+    exchange: Optional[ExchangeRef] = None
+    flow: Optional[Ref] = None
+    process: Optional[Ref] = None
+    provider: Optional[Ref] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        d['@type'] = 'FlowProperty'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.flow_property_type:
-            d['flowPropertyType'] = self.flow_property_type
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.tags:
-            d['tags'] = self.tags
-        if self.unit_group:
-            d['unitGroup'] = self.unit_group.to_dict()
-        if self.version:
-            d['version'] = self.version
+        if self.exchange:
+            d['exchange'] = self.exchange.to_dict()
+        if self.flow:
+            d['flow'] = self.flow.to_dict()
+        if self.process:
+            d['process'] = self.process.to_dict()
+        if self.provider:
+            d['provider'] = self.provider.to_dict()
         return d
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'FlowProperty':
-        flow_property = FlowProperty()
+    def from_dict(d: Dict[str, Any]) -> 'ProcessLink':
+        process_link = ProcessLink()
         if v := d.get('@type'):
-            flow_property.schema_type = v
-        if v := d.get('@id'):
-            flow_property.id = v
-        if v := d.get('category'):
-            flow_property.category = v
-        if v := d.get('description'):
-            flow_property.description = v
-        if v := d.get('flowPropertyType'):
-            flow_property.flow_property_type = v
-        if v := d.get('lastChange'):
-            flow_property.last_change = v
-        if v := d.get('library'):
-            flow_property.library = v
-        if v := d.get('name'):
-            flow_property.name = v
-        if v := d.get('tags'):
-            flow_property.tags = v
-        if v := d.get('unitGroup'):
-            flow_property.unit_group = Ref[UnitGroup].from_dict(v)
-        if v := d.get('version'):
-            flow_property.version = v
+            process_link.schema_type = v
+        if v := d.get('exchange'):
+            process_link.exchange = ExchangeRef.from_dict(v)
+        if v := d.get('flow'):
+            process_link.flow = Ref[Flow].from_dict(v)
+        if v := d.get('process'):
+            process_link.process = Ref[Process].from_dict(v)
+        if v := d.get('provider'):
+            process_link.provider = Ref.from_dict(v)
+
 
 @dataclass
 class Flow:
@@ -1302,6 +978,12 @@ class Flow:
             d['version'] = self.version
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Flow'
+        return ref
+
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> 'Flow':
         flow = Flow()
@@ -1337,6 +1019,347 @@ class Flow:
             flow.tags = v
         if v := d.get('version'):
             flow.version = v
+
+
+@dataclass
+class EpdModule:
+
+    name: Optional[str] = None
+    result: Optional[Ref] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.name:
+            d['name'] = self.name
+        if self.result:
+            d['result'] = self.result.to_dict()
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'EpdModule':
+        epd_module = EpdModule()
+        if v := d.get('@type'):
+            epd_module.schema_type = v
+        if v := d.get('name'):
+            epd_module.name = v
+        if v := d.get('result'):
+            epd_module.result = Ref[Result].from_dict(v)
+
+
+@dataclass
+class FlowMapRef:
+
+    flow: Optional[Ref] = None
+    flow_property: Optional[Ref] = None
+    provider: Optional[Ref] = None
+    unit: Optional[Ref] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.flow:
+            d['flow'] = self.flow.to_dict()
+        if self.flow_property:
+            d['flowProperty'] = self.flow_property.to_dict()
+        if self.provider:
+            d['provider'] = self.provider.to_dict()
+        if self.unit:
+            d['unit'] = self.unit.to_dict()
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'FlowMapRef':
+        flow_map_ref = FlowMapRef()
+        if v := d.get('@type'):
+            flow_map_ref.schema_type = v
+        if v := d.get('flow'):
+            flow_map_ref.flow = Ref[Flow].from_dict(v)
+        if v := d.get('flowProperty'):
+            flow_map_ref.flow_property = Ref[FlowProperty].from_dict(v)
+        if v := d.get('provider'):
+            flow_map_ref.provider = Ref[Process].from_dict(v)
+        if v := d.get('unit'):
+            flow_map_ref.unit = Ref[Unit].from_dict(v)
+
+
+@dataclass
+class Currency:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    code: Optional[str] = None
+    conversion_factor: Optional[float] = None
+    description: Optional[str] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    reference_currency: Optional[Ref] = None
+    tags: Optional[List[str]] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'Currency'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.code:
+            d['code'] = self.code
+        if self.conversion_factor:
+            d['conversionFactor'] = self.conversion_factor
+        if self.description:
+            d['description'] = self.description
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.reference_currency:
+            d['referenceCurrency'] = self.reference_currency.to_dict()
+        if self.tags:
+            d['tags'] = self.tags
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Currency'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Currency':
+        currency = Currency()
+        if v := d.get('@type'):
+            currency.schema_type = v
+        if v := d.get('@id'):
+            currency.id = v
+        if v := d.get('category'):
+            currency.category = v
+        if v := d.get('code'):
+            currency.code = v
+        if v := d.get('conversionFactor'):
+            currency.conversion_factor = v
+        if v := d.get('description'):
+            currency.description = v
+        if v := d.get('lastChange'):
+            currency.last_change = v
+        if v := d.get('library'):
+            currency.library = v
+        if v := d.get('name'):
+            currency.name = v
+        if v := d.get('referenceCurrency'):
+            currency.reference_currency = Ref[Currency].from_dict(v)
+        if v := d.get('tags'):
+            currency.tags = v
+        if v := d.get('version'):
+            currency.version = v
+
+
+@dataclass
+class Result:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    flow_results: Optional[List[FlowResult]] = None
+    impact_method: Optional[Ref] = None
+    impact_results: Optional[List[ImpactResult]] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    product_system: Optional[Ref] = None
+    tags: Optional[List[str]] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'Result'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.flow_results:
+            d['flowResults'] = [e.to_dict() for e in self.flow_results]
+        if self.impact_method:
+            d['impactMethod'] = self.impact_method.to_dict()
+        if self.impact_results:
+            d['impactResults'] = [e.to_dict() for e in self.impact_results]
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.product_system:
+            d['productSystem'] = self.product_system.to_dict()
+        if self.tags:
+            d['tags'] = self.tags
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Result'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Result':
+        result = Result()
+        if v := d.get('@type'):
+            result.schema_type = v
+        if v := d.get('@id'):
+            result.id = v
+        if v := d.get('category'):
+            result.category = v
+        if v := d.get('description'):
+            result.description = v
+        if v := d.get('flowResults'):
+            result.flow_results = [FlowResult.from_dict(e) for e in v]
+        if v := d.get('impactMethod'):
+            result.impact_method = Ref[ImpactMethod].from_dict(v)
+        if v := d.get('impactResults'):
+            result.impact_results = [ImpactResult.from_dict(e) for e in v]
+        if v := d.get('lastChange'):
+            result.last_change = v
+        if v := d.get('library'):
+            result.library = v
+        if v := d.get('name'):
+            result.name = v
+        if v := d.get('productSystem'):
+            result.product_system = Ref[ProductSystem].from_dict(v)
+        if v := d.get('tags'):
+            result.tags = v
+        if v := d.get('version'):
+            result.version = v
+
+
+@dataclass
+class Unit:
+
+    id: Optional[str] = None
+    conversion_factor: Optional[float] = None
+    description: Optional[str] = None
+    is_reference_unit: Optional[bool] = None
+    name: Optional[str] = None
+    synonyms: Optional[List[str]] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.id:
+            d['@id'] = self.id
+        if self.conversion_factor:
+            d['conversionFactor'] = self.conversion_factor
+        if self.description:
+            d['description'] = self.description
+        if self.is_reference_unit:
+            d['isReferenceUnit'] = self.is_reference_unit
+        if self.name:
+            d['name'] = self.name
+        if self.synonyms:
+            d['synonyms'] = self.synonyms
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Unit'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Unit':
+        unit = Unit()
+        if v := d.get('@type'):
+            unit.schema_type = v
+        if v := d.get('@id'):
+            unit.id = v
+        if v := d.get('conversionFactor'):
+            unit.conversion_factor = v
+        if v := d.get('description'):
+            unit.description = v
+        if v := d.get('isReferenceUnit'):
+            unit.is_reference_unit = v
+        if v := d.get('name'):
+            unit.name = v
+        if v := d.get('synonyms'):
+            unit.synonyms = v
+
+
+@dataclass
+class EpdProduct:
+
+    amount: Optional[float] = None
+    flow: Optional[Ref] = None
+    flow_property: Optional[Ref] = None
+    unit: Optional[Ref] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.amount:
+            d['amount'] = self.amount
+        if self.flow:
+            d['flow'] = self.flow.to_dict()
+        if self.flow_property:
+            d['flowProperty'] = self.flow_property.to_dict()
+        if self.unit:
+            d['unit'] = self.unit.to_dict()
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'EpdProduct':
+        epd_product = EpdProduct()
+        if v := d.get('@type'):
+            epd_product.schema_type = v
+        if v := d.get('amount'):
+            epd_product.amount = v
+        if v := d.get('flow'):
+            epd_product.flow = Ref[Flow].from_dict(v)
+        if v := d.get('flowProperty'):
+            epd_product.flow_property = Ref[FlowProperty].from_dict(v)
+        if v := d.get('unit'):
+            epd_product.unit = Ref[Unit].from_dict(v)
+
+
+@dataclass
+class DQScore:
+
+    description: Optional[str] = None
+    label: Optional[str] = None
+    position: Optional[int] = None
+    uncertainty: Optional[float] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.description:
+            d['description'] = self.description
+        if self.label:
+            d['label'] = self.label
+        if self.position:
+            d['position'] = self.position
+        if self.uncertainty:
+            d['uncertainty'] = self.uncertainty
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'DQScore':
+        d_q_score = DQScore()
+        if v := d.get('@type'):
+            d_q_score.schema_type = v
+        if v := d.get('description'):
+            d_q_score.description = v
+        if v := d.get('label'):
+            d_q_score.label = v
+        if v := d.get('position'):
+            d_q_score.position = v
+        if v := d.get('uncertainty'):
+            d_q_score.uncertainty = v
+
 
 @dataclass
 class Epd:
@@ -1392,6 +1415,12 @@ class Epd:
             d['version'] = self.version
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Epd'
+        return ref
+
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> 'Epd':
         epd = Epd()
@@ -1428,264 +1457,108 @@ class Epd:
         if v := d.get('version'):
             epd.version = v
 
-@dataclass
-class Unit:
 
-    id: Optional[str] = None
-    conversion_factor: Optional[float] = None
-    description: Optional[str] = None
-    is_reference_unit: Optional[bool] = None
+@dataclass
+class DQIndicator:
+
     name: Optional[str] = None
-    synonyms: Optional[List[str]] = None
+    position: Optional[int] = None
+    scores: Optional[List[DQScore]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        if self.id:
-            d['@id'] = self.id
-        if self.conversion_factor:
-            d['conversionFactor'] = self.conversion_factor
-        if self.description:
-            d['description'] = self.description
-        if self.is_reference_unit:
-            d['isReferenceUnit'] = self.is_reference_unit
         if self.name:
             d['name'] = self.name
-        if self.synonyms:
-            d['synonyms'] = self.synonyms
+        if self.position:
+            d['position'] = self.position
+        if self.scores:
+            d['scores'] = [e.to_dict() for e in self.scores]
         return d
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Unit':
-        unit = Unit()
+    def from_dict(d: Dict[str, Any]) -> 'DQIndicator':
+        d_q_indicator = DQIndicator()
         if v := d.get('@type'):
-            unit.schema_type = v
-        if v := d.get('@id'):
-            unit.id = v
-        if v := d.get('conversionFactor'):
-            unit.conversion_factor = v
-        if v := d.get('description'):
-            unit.description = v
-        if v := d.get('isReferenceUnit'):
-            unit.is_reference_unit = v
+            d_q_indicator.schema_type = v
         if v := d.get('name'):
-            unit.name = v
-        if v := d.get('synonyms'):
-            unit.synonyms = v
+            d_q_indicator.name = v
+        if v := d.get('position'):
+            d_q_indicator.position = v
+        if v := d.get('scores'):
+            d_q_indicator.scores = [DQScore.from_dict(e) for e in v]
+
 
 @dataclass
-class Currency:
-
-    id: Optional[str] = None
-    category: Optional[str] = None
-    code: Optional[str] = None
-    conversion_factor: Optional[float] = None
-    description: Optional[str] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    reference_currency: Optional[Ref] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'Currency'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.code:
-            d['code'] = self.code
-        if self.conversion_factor:
-            d['conversionFactor'] = self.conversion_factor
-        if self.description:
-            d['description'] = self.description
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.reference_currency:
-            d['referenceCurrency'] = self.reference_currency.to_dict()
-        if self.tags:
-            d['tags'] = self.tags
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Currency':
-        currency = Currency()
-        if v := d.get('@type'):
-            currency.schema_type = v
-        if v := d.get('@id'):
-            currency.id = v
-        if v := d.get('category'):
-            currency.category = v
-        if v := d.get('code'):
-            currency.code = v
-        if v := d.get('conversionFactor'):
-            currency.conversion_factor = v
-        if v := d.get('description'):
-            currency.description = v
-        if v := d.get('lastChange'):
-            currency.last_change = v
-        if v := d.get('library'):
-            currency.library = v
-        if v := d.get('name'):
-            currency.name = v
-        if v := d.get('referenceCurrency'):
-            currency.reference_currency = Ref[Currency].from_dict(v)
-        if v := d.get('tags'):
-            currency.tags = v
-        if v := d.get('version'):
-            currency.version = v
-
-@dataclass
-class FlowMap:
+class FlowProperty:
 
     id: Optional[str] = None
     category: Optional[str] = None
     description: Optional[str] = None
+    flow_property_type: Optional[FlowPropertyType] = None
     last_change: Optional[str] = None
     library: Optional[str] = None
-    mappings: Optional[List[FlowMapEntry]] = None
     name: Optional[str] = None
-    source: Optional[Ref] = None
     tags: Optional[List[str]] = None
-    target: Optional[Ref] = None
+    unit_group: Optional[Ref] = None
     version: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        d['@type'] = 'FlowMap'
+        d['@type'] = 'FlowProperty'
         if self.id:
             d['@id'] = self.id
         if self.category:
             d['category'] = self.category
         if self.description:
             d['description'] = self.description
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.mappings:
-            d['mappings'] = [e.to_dict() for e in self.mappings]
-        if self.name:
-            d['name'] = self.name
-        if self.source:
-            d['source'] = self.source.to_dict()
-        if self.tags:
-            d['tags'] = self.tags
-        if self.target:
-            d['target'] = self.target.to_dict()
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'FlowMap':
-        flow_map = FlowMap()
-        if v := d.get('@type'):
-            flow_map.schema_type = v
-        if v := d.get('@id'):
-            flow_map.id = v
-        if v := d.get('category'):
-            flow_map.category = v
-        if v := d.get('description'):
-            flow_map.description = v
-        if v := d.get('lastChange'):
-            flow_map.last_change = v
-        if v := d.get('library'):
-            flow_map.library = v
-        if v := d.get('mappings'):
-            flow_map.mappings = [FlowMapEntry.from_dict(e) for e in v]
-        if v := d.get('name'):
-            flow_map.name = v
-        if v := d.get('source'):
-            flow_map.source = Ref.from_dict(v)
-        if v := d.get('tags'):
-            flow_map.tags = v
-        if v := d.get('target'):
-            flow_map.target = Ref.from_dict(v)
-        if v := d.get('version'):
-            flow_map.version = v
-
-@dataclass
-class Result:
-
-    id: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    flow_results: Optional[List[FlowResult]] = None
-    impact_method: Optional[Ref] = None
-    impact_results: Optional[List[ImpactResult]] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    product_system: Optional[Ref] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'Result'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.flow_results:
-            d['flowResults'] = [e.to_dict() for e in self.flow_results]
-        if self.impact_method:
-            d['impactMethod'] = self.impact_method.to_dict()
-        if self.impact_results:
-            d['impactResults'] = [e.to_dict() for e in self.impact_results]
+        if self.flow_property_type:
+            d['flowPropertyType'] = self.flow_property_type
         if self.last_change:
             d['lastChange'] = self.last_change
         if self.library:
             d['library'] = self.library
         if self.name:
             d['name'] = self.name
-        if self.product_system:
-            d['productSystem'] = self.product_system.to_dict()
         if self.tags:
             d['tags'] = self.tags
+        if self.unit_group:
+            d['unitGroup'] = self.unit_group.to_dict()
         if self.version:
             d['version'] = self.version
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'FlowProperty'
+        return ref
+
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Result':
-        result = Result()
+    def from_dict(d: Dict[str, Any]) -> 'FlowProperty':
+        flow_property = FlowProperty()
         if v := d.get('@type'):
-            result.schema_type = v
+            flow_property.schema_type = v
         if v := d.get('@id'):
-            result.id = v
+            flow_property.id = v
         if v := d.get('category'):
-            result.category = v
+            flow_property.category = v
         if v := d.get('description'):
-            result.description = v
-        if v := d.get('flowResults'):
-            result.flow_results = [FlowResult.from_dict(e) for e in v]
-        if v := d.get('impactMethod'):
-            result.impact_method = Ref[ImpactMethod].from_dict(v)
-        if v := d.get('impactResults'):
-            result.impact_results = [ImpactResult.from_dict(e) for e in v]
+            flow_property.description = v
+        if v := d.get('flowPropertyType'):
+            flow_property.flow_property_type = v
         if v := d.get('lastChange'):
-            result.last_change = v
+            flow_property.last_change = v
         if v := d.get('library'):
-            result.library = v
+            flow_property.library = v
         if v := d.get('name'):
-            result.name = v
-        if v := d.get('productSystem'):
-            result.product_system = Ref[ProductSystem].from_dict(v)
+            flow_property.name = v
         if v := d.get('tags'):
-            result.tags = v
+            flow_property.tags = v
+        if v := d.get('unitGroup'):
+            flow_property.unit_group = Ref[UnitGroup].from_dict(v)
         if v := d.get('version'):
-            result.version = v
+            flow_property.version = v
+
 
 @dataclass
 class NwFactor:
@@ -1716,70 +1589,245 @@ class NwFactor:
         if v := d.get('weightingFactor'):
             nw_factor.weighting_factor = v
 
+
 @dataclass
-class UnitGroup:
+class NwSet:
+
+    id: Optional[str] = None
+    description: Optional[str] = None
+    factors: Optional[List[NwFactor]] = None
+    name: Optional[str] = None
+    weighted_score_unit: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.id:
+            d['@id'] = self.id
+        if self.description:
+            d['description'] = self.description
+        if self.factors:
+            d['factors'] = [e.to_dict() for e in self.factors]
+        if self.name:
+            d['name'] = self.name
+        if self.weighted_score_unit:
+            d['weightedScoreUnit'] = self.weighted_score_unit
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'NwSet':
+        nw_set = NwSet()
+        if v := d.get('@type'):
+            nw_set.schema_type = v
+        if v := d.get('@id'):
+            nw_set.id = v
+        if v := d.get('description'):
+            nw_set.description = v
+        if v := d.get('factors'):
+            nw_set.factors = [NwFactor.from_dict(e) for e in v]
+        if v := d.get('name'):
+            nw_set.name = v
+        if v := d.get('weightedScoreUnit'):
+            nw_set.weighted_score_unit = v
+
+
+@dataclass
+class DQSystem:
 
     id: Optional[str] = None
     category: Optional[str] = None
-    default_flow_property: Optional[Ref] = None
     description: Optional[str] = None
+    has_uncertainties: Optional[bool] = None
+    indicators: Optional[List[DQIndicator]] = None
     last_change: Optional[str] = None
     library: Optional[str] = None
     name: Optional[str] = None
+    source: Optional[Ref] = None
     tags: Optional[List[str]] = None
-    units: Optional[List[Unit]] = None
     version: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        d['@type'] = 'UnitGroup'
+        d['@type'] = 'DQSystem'
         if self.id:
             d['@id'] = self.id
         if self.category:
             d['category'] = self.category
-        if self.default_flow_property:
-            d['defaultFlowProperty'] = self.default_flow_property.to_dict()
         if self.description:
             d['description'] = self.description
+        if self.has_uncertainties:
+            d['hasUncertainties'] = self.has_uncertainties
+        if self.indicators:
+            d['indicators'] = [e.to_dict() for e in self.indicators]
         if self.last_change:
             d['lastChange'] = self.last_change
         if self.library:
             d['library'] = self.library
         if self.name:
             d['name'] = self.name
+        if self.source:
+            d['source'] = self.source.to_dict()
         if self.tags:
             d['tags'] = self.tags
-        if self.units:
-            d['units'] = [e.to_dict() for e in self.units]
         if self.version:
             d['version'] = self.version
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'DQSystem'
+        return ref
+
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'UnitGroup':
-        unit_group = UnitGroup()
+    def from_dict(d: Dict[str, Any]) -> 'DQSystem':
+        d_q_system = DQSystem()
         if v := d.get('@type'):
-            unit_group.schema_type = v
+            d_q_system.schema_type = v
         if v := d.get('@id'):
-            unit_group.id = v
+            d_q_system.id = v
         if v := d.get('category'):
-            unit_group.category = v
-        if v := d.get('defaultFlowProperty'):
-            unit_group.default_flow_property = Ref[FlowProperty].from_dict(v)
+            d_q_system.category = v
         if v := d.get('description'):
-            unit_group.description = v
+            d_q_system.description = v
+        if v := d.get('hasUncertainties'):
+            d_q_system.has_uncertainties = v
+        if v := d.get('indicators'):
+            d_q_system.indicators = [DQIndicator.from_dict(e) for e in v]
         if v := d.get('lastChange'):
-            unit_group.last_change = v
+            d_q_system.last_change = v
         if v := d.get('library'):
-            unit_group.library = v
+            d_q_system.library = v
         if v := d.get('name'):
-            unit_group.name = v
+            d_q_system.name = v
+        if v := d.get('source'):
+            d_q_system.source = Ref[Source].from_dict(v)
         if v := d.get('tags'):
-            unit_group.tags = v
-        if v := d.get('units'):
-            unit_group.units = [Unit.from_dict(e) for e in v]
+            d_q_system.tags = v
         if v := d.get('version'):
-            unit_group.version = v
+            d_q_system.version = v
+
+
+@dataclass
+class SocialAspect:
+
+    activity_value: Optional[float] = None
+    comment: Optional[str] = None
+    quality: Optional[str] = None
+    raw_amount: Optional[str] = None
+    risk_level: Optional[RiskLevel] = None
+    social_indicator: Optional[Ref] = None
+    source: Optional[Ref] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.activity_value:
+            d['activityValue'] = self.activity_value
+        if self.comment:
+            d['comment'] = self.comment
+        if self.quality:
+            d['quality'] = self.quality
+        if self.raw_amount:
+            d['rawAmount'] = self.raw_amount
+        if self.risk_level:
+            d['riskLevel'] = self.risk_level
+        if self.social_indicator:
+            d['socialIndicator'] = self.social_indicator.to_dict()
+        if self.source:
+            d['source'] = self.source.to_dict()
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'SocialAspect':
+        social_aspect = SocialAspect()
+        if v := d.get('@type'):
+            social_aspect.schema_type = v
+        if v := d.get('activityValue'):
+            social_aspect.activity_value = v
+        if v := d.get('comment'):
+            social_aspect.comment = v
+        if v := d.get('quality'):
+            social_aspect.quality = v
+        if v := d.get('rawAmount'):
+            social_aspect.raw_amount = v
+        if v := d.get('riskLevel'):
+            social_aspect.risk_level = v
+        if v := d.get('socialIndicator'):
+            social_aspect.social_indicator = Ref[SocialIndicator].from_dict(v)
+        if v := d.get('source'):
+            social_aspect.source = Ref[Source].from_dict(v)
+
+
+@dataclass
+class Project:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    impact_method: Optional[Ref] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    nw_set: Optional[NwSet] = None
+    tags: Optional[List[str]] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'Project'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.impact_method:
+            d['impactMethod'] = self.impact_method.to_dict()
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.nw_set:
+            d['nwSet'] = self.nw_set.to_dict()
+        if self.tags:
+            d['tags'] = self.tags
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Project'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Project':
+        project = Project()
+        if v := d.get('@type'):
+            project.schema_type = v
+        if v := d.get('@id'):
+            project.id = v
+        if v := d.get('category'):
+            project.category = v
+        if v := d.get('description'):
+            project.description = v
+        if v := d.get('impactMethod'):
+            project.impact_method = Ref[ImpactMethod].from_dict(v)
+        if v := d.get('lastChange'):
+            project.last_change = v
+        if v := d.get('library'):
+            project.library = v
+        if v := d.get('name'):
+            project.name = v
+        if v := d.get('nwSet'):
+            project.nw_set = NwSet.from_dict(v)
+        if v := d.get('tags'):
+            project.tags = v
+        if v := d.get('version'):
+            project.version = v
+
 
 @dataclass
 class Uncertainty:
@@ -1870,366 +1918,6 @@ class Uncertainty:
         if v := d.get('sdFormula'):
             uncertainty.sd_formula = v
 
-@dataclass
-class Parameter:
-
-    id: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    formula: Optional[str] = None
-    is_input_parameter: Optional[bool] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    parameter_scope: Optional[ParameterScope] = None
-    tags: Optional[List[str]] = None
-    uncertainty: Optional[Uncertainty] = None
-    value: Optional[float] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'Parameter'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.formula:
-            d['formula'] = self.formula
-        if self.is_input_parameter:
-            d['isInputParameter'] = self.is_input_parameter
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.parameter_scope:
-            d['parameterScope'] = self.parameter_scope
-        if self.tags:
-            d['tags'] = self.tags
-        if self.uncertainty:
-            d['uncertainty'] = self.uncertainty.to_dict()
-        if self.value:
-            d['value'] = self.value
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Parameter':
-        parameter = Parameter()
-        if v := d.get('@type'):
-            parameter.schema_type = v
-        if v := d.get('@id'):
-            parameter.id = v
-        if v := d.get('category'):
-            parameter.category = v
-        if v := d.get('description'):
-            parameter.description = v
-        if v := d.get('formula'):
-            parameter.formula = v
-        if v := d.get('isInputParameter'):
-            parameter.is_input_parameter = v
-        if v := d.get('lastChange'):
-            parameter.last_change = v
-        if v := d.get('library'):
-            parameter.library = v
-        if v := d.get('name'):
-            parameter.name = v
-        if v := d.get('parameterScope'):
-            parameter.parameter_scope = v
-        if v := d.get('tags'):
-            parameter.tags = v
-        if v := d.get('uncertainty'):
-            parameter.uncertainty = Uncertainty.from_dict(v)
-        if v := d.get('value'):
-            parameter.value = v
-        if v := d.get('version'):
-            parameter.version = v
-
-@dataclass
-class ParameterRedef:
-
-    context: Optional[Ref] = None
-    description: Optional[str] = None
-    name: Optional[str] = None
-    uncertainty: Optional[Uncertainty] = None
-    value: Optional[float] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.context:
-            d['context'] = self.context.to_dict()
-        if self.description:
-            d['description'] = self.description
-        if self.name:
-            d['name'] = self.name
-        if self.uncertainty:
-            d['uncertainty'] = self.uncertainty.to_dict()
-        if self.value:
-            d['value'] = self.value
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ParameterRedef':
-        parameter_redef = ParameterRedef()
-        if v := d.get('@type'):
-            parameter_redef.schema_type = v
-        if v := d.get('context'):
-            parameter_redef.context = Ref.from_dict(v)
-        if v := d.get('description'):
-            parameter_redef.description = v
-        if v := d.get('name'):
-            parameter_redef.name = v
-        if v := d.get('uncertainty'):
-            parameter_redef.uncertainty = Uncertainty.from_dict(v)
-        if v := d.get('value'):
-            parameter_redef.value = v
-
-@dataclass
-class CalculationSetup:
-
-    allocation: Optional[AllocationType] = None
-    amount: Optional[float] = None
-    calculation_type: Optional[CalculationType] = None
-    flow_property: Optional[Ref] = None
-    impact_method: Optional[Ref] = None
-    number_of_runs: Optional[int] = None
-    nw_set: Optional[Ref] = None
-    parameters: Optional[List[ParameterRedef]] = None
-    target: Optional[Ref] = None
-    unit: Optional[Ref] = None
-    with_costs: Optional[bool] = None
-    with_regionalization: Optional[bool] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.allocation:
-            d['allocation'] = self.allocation
-        if self.amount:
-            d['amount'] = self.amount
-        if self.calculation_type:
-            d['calculationType'] = self.calculation_type
-        if self.flow_property:
-            d['flowProperty'] = self.flow_property.to_dict()
-        if self.impact_method:
-            d['impactMethod'] = self.impact_method.to_dict()
-        if self.number_of_runs:
-            d['numberOfRuns'] = self.number_of_runs
-        if self.nw_set:
-            d['nwSet'] = self.nw_set.to_dict()
-        if self.parameters:
-            d['parameters'] = [e.to_dict() for e in self.parameters]
-        if self.target:
-            d['target'] = self.target.to_dict()
-        if self.unit:
-            d['unit'] = self.unit.to_dict()
-        if self.with_costs:
-            d['withCosts'] = self.with_costs
-        if self.with_regionalization:
-            d['withRegionalization'] = self.with_regionalization
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'CalculationSetup':
-        calculation_setup = CalculationSetup()
-        if v := d.get('@type'):
-            calculation_setup.schema_type = v
-        if v := d.get('allocation'):
-            calculation_setup.allocation = v
-        if v := d.get('amount'):
-            calculation_setup.amount = v
-        if v := d.get('calculationType'):
-            calculation_setup.calculation_type = v
-        if v := d.get('flowProperty'):
-            calculation_setup.flow_property = Ref[FlowProperty].from_dict(v)
-        if v := d.get('impactMethod'):
-            calculation_setup.impact_method = Ref[ImpactMethod].from_dict(v)
-        if v := d.get('numberOfRuns'):
-            calculation_setup.number_of_runs = v
-        if v := d.get('nwSet'):
-            calculation_setup.nw_set = Ref[NwSet].from_dict(v)
-        if v := d.get('parameters'):
-            calculation_setup.parameters = [ParameterRedef.from_dict(e) for e in v]
-        if v := d.get('target'):
-            calculation_setup.target = Ref.from_dict(v)
-        if v := d.get('unit'):
-            calculation_setup.unit = Ref[Unit].from_dict(v)
-        if v := d.get('withCosts'):
-            calculation_setup.with_costs = v
-        if v := d.get('withRegionalization'):
-            calculation_setup.with_regionalization = v
-
-@dataclass
-class ParameterRedefSet:
-
-    description: Optional[str] = None
-    is_baseline: Optional[bool] = None
-    name: Optional[str] = None
-    parameters: Optional[List[ParameterRedef]] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.description:
-            d['description'] = self.description
-        if self.is_baseline:
-            d['isBaseline'] = self.is_baseline
-        if self.name:
-            d['name'] = self.name
-        if self.parameters:
-            d['parameters'] = [e.to_dict() for e in self.parameters]
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ParameterRedefSet':
-        parameter_redef_set = ParameterRedefSet()
-        if v := d.get('@type'):
-            parameter_redef_set.schema_type = v
-        if v := d.get('description'):
-            parameter_redef_set.description = v
-        if v := d.get('isBaseline'):
-            parameter_redef_set.is_baseline = v
-        if v := d.get('name'):
-            parameter_redef_set.name = v
-        if v := d.get('parameters'):
-            parameter_redef_set.parameters = [ParameterRedef.from_dict(e) for e in v]
-
-@dataclass
-class ProductSystem:
-
-    id: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    parameter_sets: Optional[List[ParameterRedefSet]] = None
-    process_links: Optional[List[ProcessLink]] = None
-    processes: Optional[List[Ref]] = None
-    reference_exchange: Optional[ExchangeRef] = None
-    reference_process: Optional[Ref] = None
-    tags: Optional[List[str]] = None
-    target_amount: Optional[float] = None
-    target_flow_property: Optional[Ref] = None
-    target_unit: Optional[Ref] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'ProductSystem'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.parameter_sets:
-            d['parameterSets'] = [e.to_dict() for e in self.parameter_sets]
-        if self.process_links:
-            d['processLinks'] = [e.to_dict() for e in self.process_links]
-        if self.processes:
-            d['processes'] = [e.to_dict() for e in self.processes]
-        if self.reference_exchange:
-            d['referenceExchange'] = self.reference_exchange.to_dict()
-        if self.reference_process:
-            d['referenceProcess'] = self.reference_process.to_dict()
-        if self.tags:
-            d['tags'] = self.tags
-        if self.target_amount:
-            d['targetAmount'] = self.target_amount
-        if self.target_flow_property:
-            d['targetFlowProperty'] = self.target_flow_property.to_dict()
-        if self.target_unit:
-            d['targetUnit'] = self.target_unit.to_dict()
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ProductSystem':
-        product_system = ProductSystem()
-        if v := d.get('@type'):
-            product_system.schema_type = v
-        if v := d.get('@id'):
-            product_system.id = v
-        if v := d.get('category'):
-            product_system.category = v
-        if v := d.get('description'):
-            product_system.description = v
-        if v := d.get('lastChange'):
-            product_system.last_change = v
-        if v := d.get('library'):
-            product_system.library = v
-        if v := d.get('name'):
-            product_system.name = v
-        if v := d.get('parameterSets'):
-            product_system.parameter_sets = [ParameterRedefSet.from_dict(e) for e in v]
-        if v := d.get('processLinks'):
-            product_system.process_links = [ProcessLink.from_dict(e) for e in v]
-        if v := d.get('processes'):
-            product_system.processes = [Ref.from_dict(e) for e in v]
-        if v := d.get('referenceExchange'):
-            product_system.reference_exchange = ExchangeRef.from_dict(v)
-        if v := d.get('referenceProcess'):
-            product_system.reference_process = Ref[Process].from_dict(v)
-        if v := d.get('tags'):
-            product_system.tags = v
-        if v := d.get('targetAmount'):
-            product_system.target_amount = v
-        if v := d.get('targetFlowProperty'):
-            product_system.target_flow_property = Ref[FlowProperty].from_dict(v)
-        if v := d.get('targetUnit'):
-            product_system.target_unit = Ref[Unit].from_dict(v)
-        if v := d.get('version'):
-            product_system.version = v
-
-@dataclass
-class NwSet:
-
-    id: Optional[str] = None
-    description: Optional[str] = None
-    factors: Optional[List[NwFactor]] = None
-    name: Optional[str] = None
-    weighted_score_unit: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.id:
-            d['@id'] = self.id
-        if self.description:
-            d['description'] = self.description
-        if self.factors:
-            d['factors'] = [e.to_dict() for e in self.factors]
-        if self.name:
-            d['name'] = self.name
-        if self.weighted_score_unit:
-            d['weightedScoreUnit'] = self.weighted_score_unit
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'NwSet':
-        nw_set = NwSet()
-        if v := d.get('@type'):
-            nw_set.schema_type = v
-        if v := d.get('@id'):
-            nw_set.id = v
-        if v := d.get('description'):
-            nw_set.description = v
-        if v := d.get('factors'):
-            nw_set.factors = [NwFactor.from_dict(e) for e in v]
-        if v := d.get('name'):
-            nw_set.name = v
-        if v := d.get('weightedScoreUnit'):
-            nw_set.weighted_score_unit = v
 
 @dataclass
 class Exchange:
@@ -2330,6 +2018,632 @@ class Exchange:
         if v := d.get('unit'):
             exchange.unit = Ref[Unit].from_dict(v)
 
+
+@dataclass
+class ParameterRedef:
+
+    context: Optional[Ref] = None
+    description: Optional[str] = None
+    name: Optional[str] = None
+    uncertainty: Optional[Uncertainty] = None
+    value: Optional[float] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.context:
+            d['context'] = self.context.to_dict()
+        if self.description:
+            d['description'] = self.description
+        if self.name:
+            d['name'] = self.name
+        if self.uncertainty:
+            d['uncertainty'] = self.uncertainty.to_dict()
+        if self.value:
+            d['value'] = self.value
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'ParameterRedef':
+        parameter_redef = ParameterRedef()
+        if v := d.get('@type'):
+            parameter_redef.schema_type = v
+        if v := d.get('context'):
+            parameter_redef.context = Ref.from_dict(v)
+        if v := d.get('description'):
+            parameter_redef.description = v
+        if v := d.get('name'):
+            parameter_redef.name = v
+        if v := d.get('uncertainty'):
+            parameter_redef.uncertainty = Uncertainty.from_dict(v)
+        if v := d.get('value'):
+            parameter_redef.value = v
+
+
+@dataclass
+class FlowMapEntry:
+
+    conversion_factor: Optional[float] = None
+    from_: Optional[FlowMapRef] = None
+    to: Optional[FlowMapRef] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.conversion_factor:
+            d['conversionFactor'] = self.conversion_factor
+        if self.from_:
+            d['from'] = self.from_.to_dict()
+        if self.to:
+            d['to'] = self.to.to_dict()
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'FlowMapEntry':
+        flow_map_entry = FlowMapEntry()
+        if v := d.get('@type'):
+            flow_map_entry.schema_type = v
+        if v := d.get('conversionFactor'):
+            flow_map_entry.conversion_factor = v
+        if v := d.get('from'):
+            flow_map_entry.from_ = FlowMapRef.from_dict(v)
+        if v := d.get('to'):
+            flow_map_entry.to = FlowMapRef.from_dict(v)
+
+
+@dataclass
+class FlowMap:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    mappings: Optional[List[FlowMapEntry]] = None
+    name: Optional[str] = None
+    source: Optional[Ref] = None
+    tags: Optional[List[str]] = None
+    target: Optional[Ref] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'FlowMap'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.mappings:
+            d['mappings'] = [e.to_dict() for e in self.mappings]
+        if self.name:
+            d['name'] = self.name
+        if self.source:
+            d['source'] = self.source.to_dict()
+        if self.tags:
+            d['tags'] = self.tags
+        if self.target:
+            d['target'] = self.target.to_dict()
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'FlowMap'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'FlowMap':
+        flow_map = FlowMap()
+        if v := d.get('@type'):
+            flow_map.schema_type = v
+        if v := d.get('@id'):
+            flow_map.id = v
+        if v := d.get('category'):
+            flow_map.category = v
+        if v := d.get('description'):
+            flow_map.description = v
+        if v := d.get('lastChange'):
+            flow_map.last_change = v
+        if v := d.get('library'):
+            flow_map.library = v
+        if v := d.get('mappings'):
+            flow_map.mappings = [FlowMapEntry.from_dict(e) for e in v]
+        if v := d.get('name'):
+            flow_map.name = v
+        if v := d.get('source'):
+            flow_map.source = Ref.from_dict(v)
+        if v := d.get('tags'):
+            flow_map.tags = v
+        if v := d.get('target'):
+            flow_map.target = Ref.from_dict(v)
+        if v := d.get('version'):
+            flow_map.version = v
+
+
+@dataclass
+class ImpactFactor:
+
+    flow: Optional[Ref] = None
+    flow_property: Optional[Ref] = None
+    formula: Optional[str] = None
+    location: Optional[Ref] = None
+    uncertainty: Optional[Uncertainty] = None
+    unit: Optional[Ref] = None
+    value: Optional[float] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.flow:
+            d['flow'] = self.flow.to_dict()
+        if self.flow_property:
+            d['flowProperty'] = self.flow_property.to_dict()
+        if self.formula:
+            d['formula'] = self.formula
+        if self.location:
+            d['location'] = self.location.to_dict()
+        if self.uncertainty:
+            d['uncertainty'] = self.uncertainty.to_dict()
+        if self.unit:
+            d['unit'] = self.unit.to_dict()
+        if self.value:
+            d['value'] = self.value
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'ImpactFactor':
+        impact_factor = ImpactFactor()
+        if v := d.get('@type'):
+            impact_factor.schema_type = v
+        if v := d.get('flow'):
+            impact_factor.flow = Ref[Flow].from_dict(v)
+        if v := d.get('flowProperty'):
+            impact_factor.flow_property = Ref[FlowProperty].from_dict(v)
+        if v := d.get('formula'):
+            impact_factor.formula = v
+        if v := d.get('location'):
+            impact_factor.location = Ref[Location].from_dict(v)
+        if v := d.get('uncertainty'):
+            impact_factor.uncertainty = Uncertainty.from_dict(v)
+        if v := d.get('unit'):
+            impact_factor.unit = Ref[Unit].from_dict(v)
+        if v := d.get('value'):
+            impact_factor.value = v
+
+
+@dataclass
+class ImpactMethod:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    impact_categories: Optional[List[Ref]] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    nw_sets: Optional[List[NwSet]] = None
+    source: Optional[Ref] = None
+    tags: Optional[List[str]] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'ImpactMethod'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.impact_categories:
+            d['impactCategories'] = [e.to_dict() for e in self.impact_categories]
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.nw_sets:
+            d['nwSets'] = [e.to_dict() for e in self.nw_sets]
+        if self.source:
+            d['source'] = self.source.to_dict()
+        if self.tags:
+            d['tags'] = self.tags
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'ImpactMethod'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'ImpactMethod':
+        impact_method = ImpactMethod()
+        if v := d.get('@type'):
+            impact_method.schema_type = v
+        if v := d.get('@id'):
+            impact_method.id = v
+        if v := d.get('category'):
+            impact_method.category = v
+        if v := d.get('description'):
+            impact_method.description = v
+        if v := d.get('impactCategories'):
+            impact_method.impact_categories = [Ref[ImpactCategory].from_dict(e) for e in v]
+        if v := d.get('lastChange'):
+            impact_method.last_change = v
+        if v := d.get('library'):
+            impact_method.library = v
+        if v := d.get('name'):
+            impact_method.name = v
+        if v := d.get('nwSets'):
+            impact_method.nw_sets = [NwSet.from_dict(e) for e in v]
+        if v := d.get('source'):
+            impact_method.source = Ref[Source].from_dict(v)
+        if v := d.get('tags'):
+            impact_method.tags = v
+        if v := d.get('version'):
+            impact_method.version = v
+
+
+@dataclass
+class UnitGroup:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    default_flow_property: Optional[Ref] = None
+    description: Optional[str] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    tags: Optional[List[str]] = None
+    units: Optional[List[Unit]] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'UnitGroup'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.default_flow_property:
+            d['defaultFlowProperty'] = self.default_flow_property.to_dict()
+        if self.description:
+            d['description'] = self.description
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.tags:
+            d['tags'] = self.tags
+        if self.units:
+            d['units'] = [e.to_dict() for e in self.units]
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'UnitGroup'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'UnitGroup':
+        unit_group = UnitGroup()
+        if v := d.get('@type'):
+            unit_group.schema_type = v
+        if v := d.get('@id'):
+            unit_group.id = v
+        if v := d.get('category'):
+            unit_group.category = v
+        if v := d.get('defaultFlowProperty'):
+            unit_group.default_flow_property = Ref[FlowProperty].from_dict(v)
+        if v := d.get('description'):
+            unit_group.description = v
+        if v := d.get('lastChange'):
+            unit_group.last_change = v
+        if v := d.get('library'):
+            unit_group.library = v
+        if v := d.get('name'):
+            unit_group.name = v
+        if v := d.get('tags'):
+            unit_group.tags = v
+        if v := d.get('units'):
+            unit_group.units = [Unit.from_dict(e) for e in v]
+        if v := d.get('version'):
+            unit_group.version = v
+
+
+@dataclass
+class CalculationSetup:
+
+    allocation: Optional[AllocationType] = None
+    amount: Optional[float] = None
+    calculation_type: Optional[CalculationType] = None
+    flow_property: Optional[Ref] = None
+    impact_method: Optional[Ref] = None
+    number_of_runs: Optional[int] = None
+    nw_set: Optional[Ref] = None
+    parameters: Optional[List[ParameterRedef]] = None
+    target: Optional[Ref] = None
+    unit: Optional[Ref] = None
+    with_costs: Optional[bool] = None
+    with_regionalization: Optional[bool] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.allocation:
+            d['allocation'] = self.allocation
+        if self.amount:
+            d['amount'] = self.amount
+        if self.calculation_type:
+            d['calculationType'] = self.calculation_type
+        if self.flow_property:
+            d['flowProperty'] = self.flow_property.to_dict()
+        if self.impact_method:
+            d['impactMethod'] = self.impact_method.to_dict()
+        if self.number_of_runs:
+            d['numberOfRuns'] = self.number_of_runs
+        if self.nw_set:
+            d['nwSet'] = self.nw_set.to_dict()
+        if self.parameters:
+            d['parameters'] = [e.to_dict() for e in self.parameters]
+        if self.target:
+            d['target'] = self.target.to_dict()
+        if self.unit:
+            d['unit'] = self.unit.to_dict()
+        if self.with_costs:
+            d['withCosts'] = self.with_costs
+        if self.with_regionalization:
+            d['withRegionalization'] = self.with_regionalization
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'CalculationSetup':
+        calculation_setup = CalculationSetup()
+        if v := d.get('@type'):
+            calculation_setup.schema_type = v
+        if v := d.get('allocation'):
+            calculation_setup.allocation = v
+        if v := d.get('amount'):
+            calculation_setup.amount = v
+        if v := d.get('calculationType'):
+            calculation_setup.calculation_type = v
+        if v := d.get('flowProperty'):
+            calculation_setup.flow_property = Ref[FlowProperty].from_dict(v)
+        if v := d.get('impactMethod'):
+            calculation_setup.impact_method = Ref[ImpactMethod].from_dict(v)
+        if v := d.get('numberOfRuns'):
+            calculation_setup.number_of_runs = v
+        if v := d.get('nwSet'):
+            calculation_setup.nw_set = Ref[NwSet].from_dict(v)
+        if v := d.get('parameters'):
+            calculation_setup.parameters = [ParameterRedef.from_dict(e) for e in v]
+        if v := d.get('target'):
+            calculation_setup.target = Ref.from_dict(v)
+        if v := d.get('unit'):
+            calculation_setup.unit = Ref[Unit].from_dict(v)
+        if v := d.get('withCosts'):
+            calculation_setup.with_costs = v
+        if v := d.get('withRegionalization'):
+            calculation_setup.with_regionalization = v
+
+
+@dataclass
+class Parameter:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    formula: Optional[str] = None
+    is_input_parameter: Optional[bool] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    parameter_scope: Optional[ParameterScope] = None
+    tags: Optional[List[str]] = None
+    uncertainty: Optional[Uncertainty] = None
+    value: Optional[float] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'Parameter'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.formula:
+            d['formula'] = self.formula
+        if self.is_input_parameter:
+            d['isInputParameter'] = self.is_input_parameter
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.parameter_scope:
+            d['parameterScope'] = self.parameter_scope
+        if self.tags:
+            d['tags'] = self.tags
+        if self.uncertainty:
+            d['uncertainty'] = self.uncertainty.to_dict()
+        if self.value:
+            d['value'] = self.value
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Parameter'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Parameter':
+        parameter = Parameter()
+        if v := d.get('@type'):
+            parameter.schema_type = v
+        if v := d.get('@id'):
+            parameter.id = v
+        if v := d.get('category'):
+            parameter.category = v
+        if v := d.get('description'):
+            parameter.description = v
+        if v := d.get('formula'):
+            parameter.formula = v
+        if v := d.get('isInputParameter'):
+            parameter.is_input_parameter = v
+        if v := d.get('lastChange'):
+            parameter.last_change = v
+        if v := d.get('library'):
+            parameter.library = v
+        if v := d.get('name'):
+            parameter.name = v
+        if v := d.get('parameterScope'):
+            parameter.parameter_scope = v
+        if v := d.get('tags'):
+            parameter.tags = v
+        if v := d.get('uncertainty'):
+            parameter.uncertainty = Uncertainty.from_dict(v)
+        if v := d.get('value'):
+            parameter.value = v
+        if v := d.get('version'):
+            parameter.version = v
+
+
+@dataclass
+class ImpactCategory:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    impact_factors: Optional[List[ImpactFactor]] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    parameters: Optional[List[Parameter]] = None
+    ref_unit: Optional[str] = None
+    source: Optional[Ref] = None
+    tags: Optional[List[str]] = None
+    version: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'ImpactCategory'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.impact_factors:
+            d['impactFactors'] = [e.to_dict() for e in self.impact_factors]
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.parameters:
+            d['parameters'] = [e.to_dict() for e in self.parameters]
+        if self.ref_unit:
+            d['refUnit'] = self.ref_unit
+        if self.source:
+            d['source'] = self.source.to_dict()
+        if self.tags:
+            d['tags'] = self.tags
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'ImpactCategory'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'ImpactCategory':
+        impact_category = ImpactCategory()
+        if v := d.get('@type'):
+            impact_category.schema_type = v
+        if v := d.get('@id'):
+            impact_category.id = v
+        if v := d.get('category'):
+            impact_category.category = v
+        if v := d.get('description'):
+            impact_category.description = v
+        if v := d.get('impactFactors'):
+            impact_category.impact_factors = [ImpactFactor.from_dict(e) for e in v]
+        if v := d.get('lastChange'):
+            impact_category.last_change = v
+        if v := d.get('library'):
+            impact_category.library = v
+        if v := d.get('name'):
+            impact_category.name = v
+        if v := d.get('parameters'):
+            impact_category.parameters = [Parameter.from_dict(e) for e in v]
+        if v := d.get('refUnit'):
+            impact_category.ref_unit = v
+        if v := d.get('source'):
+            impact_category.source = Ref[Source].from_dict(v)
+        if v := d.get('tags'):
+            impact_category.tags = v
+        if v := d.get('version'):
+            impact_category.version = v
+
+
+@dataclass
+class ParameterRedefSet:
+
+    description: Optional[str] = None
+    is_baseline: Optional[bool] = None
+    name: Optional[str] = None
+    parameters: Optional[List[ParameterRedef]] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.description:
+            d['description'] = self.description
+        if self.is_baseline:
+            d['isBaseline'] = self.is_baseline
+        if self.name:
+            d['name'] = self.name
+        if self.parameters:
+            d['parameters'] = [e.to_dict() for e in self.parameters]
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'ParameterRedefSet':
+        parameter_redef_set = ParameterRedefSet()
+        if v := d.get('@type'):
+            parameter_redef_set.schema_type = v
+        if v := d.get('description'):
+            parameter_redef_set.description = v
+        if v := d.get('isBaseline'):
+            parameter_redef_set.is_baseline = v
+        if v := d.get('name'):
+            parameter_redef_set.name = v
+        if v := d.get('parameters'):
+            parameter_redef_set.parameters = [ParameterRedef.from_dict(e) for e in v]
+
+
 @dataclass
 class Process:
 
@@ -2405,6 +2719,12 @@ class Process:
             d['version'] = self.version
         return d
 
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Process'
+        return ref
+
     @staticmethod
     def from_dict(d: Dict[str, Any]) -> 'Process':
         process = Process()
@@ -2455,262 +2775,127 @@ class Process:
         if v := d.get('version'):
             process.version = v
 
-@dataclass
-class ImpactFactor:
-
-    flow: Optional[Ref] = None
-    flow_property: Optional[Ref] = None
-    formula: Optional[str] = None
-    location: Optional[Ref] = None
-    uncertainty: Optional[Uncertainty] = None
-    unit: Optional[Ref] = None
-    value: Optional[float] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        if self.flow:
-            d['flow'] = self.flow.to_dict()
-        if self.flow_property:
-            d['flowProperty'] = self.flow_property.to_dict()
-        if self.formula:
-            d['formula'] = self.formula
-        if self.location:
-            d['location'] = self.location.to_dict()
-        if self.uncertainty:
-            d['uncertainty'] = self.uncertainty.to_dict()
-        if self.unit:
-            d['unit'] = self.unit.to_dict()
-        if self.value:
-            d['value'] = self.value
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ImpactFactor':
-        impact_factor = ImpactFactor()
-        if v := d.get('@type'):
-            impact_factor.schema_type = v
-        if v := d.get('flow'):
-            impact_factor.flow = Ref[Flow].from_dict(v)
-        if v := d.get('flowProperty'):
-            impact_factor.flow_property = Ref[FlowProperty].from_dict(v)
-        if v := d.get('formula'):
-            impact_factor.formula = v
-        if v := d.get('location'):
-            impact_factor.location = Ref[Location].from_dict(v)
-        if v := d.get('uncertainty'):
-            impact_factor.uncertainty = Uncertainty.from_dict(v)
-        if v := d.get('unit'):
-            impact_factor.unit = Ref[Unit].from_dict(v)
-        if v := d.get('value'):
-            impact_factor.value = v
 
 @dataclass
-class Project:
+class ProductSystem:
 
     id: Optional[str] = None
     category: Optional[str] = None
     description: Optional[str] = None
-    impact_method: Optional[Ref] = None
     last_change: Optional[str] = None
     library: Optional[str] = None
     name: Optional[str] = None
-    nw_set: Optional[NwSet] = None
+    parameter_sets: Optional[List[ParameterRedefSet]] = None
+    process_links: Optional[List[ProcessLink]] = None
+    processes: Optional[List[Ref]] = None
+    reference_exchange: Optional[ExchangeRef] = None
+    reference_process: Optional[Ref] = None
     tags: Optional[List[str]] = None
+    target_amount: Optional[float] = None
+    target_flow_property: Optional[Ref] = None
+    target_unit: Optional[Ref] = None
     version: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
-        d['@type'] = 'Project'
+        d['@type'] = 'ProductSystem'
         if self.id:
             d['@id'] = self.id
         if self.category:
             d['category'] = self.category
         if self.description:
             d['description'] = self.description
-        if self.impact_method:
-            d['impactMethod'] = self.impact_method.to_dict()
         if self.last_change:
             d['lastChange'] = self.last_change
         if self.library:
             d['library'] = self.library
         if self.name:
             d['name'] = self.name
-        if self.nw_set:
-            d['nwSet'] = self.nw_set.to_dict()
+        if self.parameter_sets:
+            d['parameterSets'] = [e.to_dict() for e in self.parameter_sets]
+        if self.process_links:
+            d['processLinks'] = [e.to_dict() for e in self.process_links]
+        if self.processes:
+            d['processes'] = [e.to_dict() for e in self.processes]
+        if self.reference_exchange:
+            d['referenceExchange'] = self.reference_exchange.to_dict()
+        if self.reference_process:
+            d['referenceProcess'] = self.reference_process.to_dict()
         if self.tags:
             d['tags'] = self.tags
+        if self.target_amount:
+            d['targetAmount'] = self.target_amount
+        if self.target_flow_property:
+            d['targetFlowProperty'] = self.target_flow_property.to_dict()
+        if self.target_unit:
+            d['targetUnit'] = self.target_unit.to_dict()
         if self.version:
             d['version'] = self.version
         return d
 
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Project':
-        project = Project()
-        if v := d.get('@type'):
-            project.schema_type = v
-        if v := d.get('@id'):
-            project.id = v
-        if v := d.get('category'):
-            project.category = v
-        if v := d.get('description'):
-            project.description = v
-        if v := d.get('impactMethod'):
-            project.impact_method = Ref[ImpactMethod].from_dict(v)
-        if v := d.get('lastChange'):
-            project.last_change = v
-        if v := d.get('library'):
-            project.library = v
-        if v := d.get('name'):
-            project.name = v
-        if v := d.get('nwSet'):
-            project.nw_set = NwSet.from_dict(v)
-        if v := d.get('tags'):
-            project.tags = v
-        if v := d.get('version'):
-            project.version = v
-
-@dataclass
-class ImpactCategory:
-
-    id: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    impact_factors: Optional[List[ImpactFactor]] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    parameters: Optional[List[Parameter]] = None
-    ref_unit: Optional[str] = None
-    source: Optional[Ref] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'ImpactCategory'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.impact_factors:
-            d['impactFactors'] = [e.to_dict() for e in self.impact_factors]
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.parameters:
-            d['parameters'] = [e.to_dict() for e in self.parameters]
-        if self.ref_unit:
-            d['refUnit'] = self.ref_unit
-        if self.source:
-            d['source'] = self.source.to_dict()
-        if self.tags:
-            d['tags'] = self.tags
-        if self.version:
-            d['version'] = self.version
-        return d
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'ProductSystem'
+        return ref
 
     @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ImpactCategory':
-        impact_category = ImpactCategory()
+    def from_dict(d: Dict[str, Any]) -> 'ProductSystem':
+        product_system = ProductSystem()
         if v := d.get('@type'):
-            impact_category.schema_type = v
+            product_system.schema_type = v
         if v := d.get('@id'):
-            impact_category.id = v
+            product_system.id = v
         if v := d.get('category'):
-            impact_category.category = v
+            product_system.category = v
         if v := d.get('description'):
-            impact_category.description = v
-        if v := d.get('impactFactors'):
-            impact_category.impact_factors = [ImpactFactor.from_dict(e) for e in v]
+            product_system.description = v
         if v := d.get('lastChange'):
-            impact_category.last_change = v
+            product_system.last_change = v
         if v := d.get('library'):
-            impact_category.library = v
+            product_system.library = v
         if v := d.get('name'):
-            impact_category.name = v
-        if v := d.get('parameters'):
-            impact_category.parameters = [Parameter.from_dict(e) for e in v]
-        if v := d.get('refUnit'):
-            impact_category.ref_unit = v
-        if v := d.get('source'):
-            impact_category.source = Ref[Source].from_dict(v)
+            product_system.name = v
+        if v := d.get('parameterSets'):
+            product_system.parameter_sets = [ParameterRedefSet.from_dict(e) for e in v]
+        if v := d.get('processLinks'):
+            product_system.process_links = [ProcessLink.from_dict(e) for e in v]
+        if v := d.get('processes'):
+            product_system.processes = [Ref.from_dict(e) for e in v]
+        if v := d.get('referenceExchange'):
+            product_system.reference_exchange = ExchangeRef.from_dict(v)
+        if v := d.get('referenceProcess'):
+            product_system.reference_process = Ref[Process].from_dict(v)
         if v := d.get('tags'):
-            impact_category.tags = v
+            product_system.tags = v
+        if v := d.get('targetAmount'):
+            product_system.target_amount = v
+        if v := d.get('targetFlowProperty'):
+            product_system.target_flow_property = Ref[FlowProperty].from_dict(v)
+        if v := d.get('targetUnit'):
+            product_system.target_unit = Ref[Unit].from_dict(v)
         if v := d.get('version'):
-            impact_category.version = v
+            product_system.version = v
 
-@dataclass
-class ImpactMethod:
 
-    id: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    impact_categories: Optional[List[Ref]] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    nw_sets: Optional[List[NwSet]] = None
-    source: Optional[Ref] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'ImpactMethod'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.impact_categories:
-            d['impactCategories'] = [e.to_dict() for e in self.impact_categories]
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.nw_sets:
-            d['nwSets'] = [e.to_dict() for e in self.nw_sets]
-        if self.source:
-            d['source'] = self.source.to_dict()
-        if self.tags:
-            d['tags'] = self.tags
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'ImpactMethod':
-        impact_method = ImpactMethod()
-        if v := d.get('@type'):
-            impact_method.schema_type = v
-        if v := d.get('@id'):
-            impact_method.id = v
-        if v := d.get('category'):
-            impact_method.category = v
-        if v := d.get('description'):
-            impact_method.description = v
-        if v := d.get('impactCategories'):
-            impact_method.impact_categories = [Ref[ImpactCategory].from_dict(e) for e in v]
-        if v := d.get('lastChange'):
-            impact_method.last_change = v
-        if v := d.get('library'):
-            impact_method.library = v
-        if v := d.get('name'):
-            impact_method.name = v
-        if v := d.get('nwSets'):
-            impact_method.nw_sets = [NwSet.from_dict(e) for e in v]
-        if v := d.get('source'):
-            impact_method.source = Ref[Source].from_dict(v)
-        if v := d.get('tags'):
-            impact_method.tags = v
-        if v := d.get('version'):
-            impact_method.version = v
-
+RootEntity = Union[
+    Actor,
+    Category,
+    Currency,
+    DQSystem,
+    Epd,
+    Flow,
+    FlowMap,
+    FlowProperty,
+    ImpactCategory,
+    ImpactMethod,
+    Location,
+    Parameter,
+    Process,
+    ProductSystem,
+    Project,
+    Result,
+    SocialIndicator,
+    Source,
+    UnitGroup,
+]
