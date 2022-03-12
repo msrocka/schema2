@@ -44,23 +44,26 @@ class ZipReader:
     def close(self):
         self.__zip.close()
 
-    def read(self, class_type: Union[type, str], id: str) \
-            -> Optional[schema.RootEntity]:
-        pass
-
-    def read_actor(self, id: str) -> Optional[schema.Actor]:
-        path = f'actors/{id}.json'
+    def read(self, class_type: type, uid: str) -> Optional[schema.RootEntity]:
+        folder = _folder_of_class(class_type)
+        path = f'{folder}/{uid}.json'
         if path not in self.__zip.namelist():
             return None
         data = self.__zip.read(path)
         entity_dict = json.loads(data)
-        return schema.Actor.from_dict(entity_dict)
+        return class_type.from_dict(entity_dict)
+
+    def read_actor(self, uid: str) -> Optional[schema.Actor]:
+        return self.read(schema.Actor, uid)
 
 
-def _folder_of_entity(entity: schema.RootEntity):
+def _folder_of_entity(entity: schema.RootEntity) -> str:
     if entity is None:
         raise ValueError("unknown root entity type: " + entity)
-    t = type(entity)
+    return _folder_of_class(type(entity))
+
+
+def _folder_of_class(t: type) -> str:
     if t == schema.Actor:
         return 'actors'
     if t == schema.Currency:
@@ -95,4 +98,4 @@ def _folder_of_entity(entity: schema.RootEntity):
         return 'sources'
     if t == schema.UnitGroup:
         return 'unit_groups'
-    raise ValueError("unknown entity type %s" % t)
+    raise ValueError(f'not a known root entity type: {t}')
