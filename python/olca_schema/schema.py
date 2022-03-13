@@ -4,7 +4,9 @@
 # the JSON based openLCA data exchange format. For more information see
 # http://greendelta.github.io/olca-schema
 
+import datetime
 import json
+import uuid
 
 from enum import Enum
 from dataclasses import dataclass
@@ -272,6 +274,14 @@ class Actor:
     website: Optional[str] = None
     zip_code: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'Actor'
@@ -416,6 +426,14 @@ class Category:
     tags: Optional[List[str]] = None
     version: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'Category'
@@ -492,6 +510,14 @@ class Currency:
     reference_currency: Optional[Ref] = None
     tags: Optional[List[str]] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -577,6 +603,14 @@ class DQSystem:
     source: Optional[Ref] = None
     tags: Optional[List[str]] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -728,6 +762,14 @@ class Epd:
     urn: Optional[str] = None
     verifier: Optional[Ref] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -897,6 +939,14 @@ class FlowMap:
     target: Optional[Ref] = None
     version: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'FlowMap'
@@ -980,6 +1030,14 @@ class FlowProperty:
     tags: Optional[List[str]] = None
     unit_group: Optional[Ref] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -1096,6 +1154,14 @@ class Flow:
     synonyms: Optional[str] = None
     tags: Optional[List[str]] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -1286,6 +1352,14 @@ class Location:
     tags: Optional[List[str]] = None
     version: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'Location'
@@ -1446,6 +1520,14 @@ class ImpactMethod:
     source: Optional[Ref] = None
     tags: Optional[List[str]] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -1703,6 +1785,14 @@ class Project:
     tags: Optional[List[str]] = None
     version: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'Project'
@@ -1784,6 +1874,14 @@ class Result:
     product_system: Optional[Ref] = None
     tags: Optional[List[str]] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -1927,6 +2025,14 @@ class SocialIndicator:
     unit_of_measurement: Optional[str] = None
     version: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'SocialIndicator'
@@ -2020,6 +2126,14 @@ class Source:
     url: Optional[str] = None
     version: Optional[str] = None
     year: Optional[int] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -2355,6 +2469,14 @@ class Parameter:
     value: Optional[float] = None
     version: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'Parameter'
@@ -2448,6 +2570,14 @@ class ImpactCategory:
     source: Optional[Ref] = None
     tags: Optional[List[str]] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -2702,6 +2832,14 @@ class Process:
     tags: Optional[List[str]] = None
     version: Optional[str] = None
 
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         d['@type'] = 'Process'
@@ -2835,6 +2973,14 @@ class ProductSystem:
     target_flow_property: Optional[Ref] = None
     target_unit: Optional[Ref] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -2991,6 +3137,14 @@ class UnitGroup:
     tags: Optional[List[str]] = None
     units: Optional[List[Unit]] = None
     version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}

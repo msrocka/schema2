@@ -1,9 +1,8 @@
-import datetime
 import uuid
 
 from .schema import *
 
-from typing import Optional, TypeVar, Union
+from typing import Optional, Union
 
 
 def unit_of(name='', conversion_factor=1.0) -> Unit:
@@ -23,9 +22,7 @@ def unit_of(name='', conversion_factor=1.0) -> Unit:
     kg = olca.unit_of('kg')
     ```
     """
-    unit = Unit()
-    unit.id = str(uuid.uuid4())
-    unit.name = name
+    unit = Unit(name=name, id=str(uuid.uuid4()))
     unit.conversion_factor = conversion_factor
     unit.reference_unit = conversion_factor == 1.0
     return unit
@@ -49,8 +46,7 @@ def unit_group_of(name: str, unit: Union[str, Unit]) -> UnitGroup:
     """
     u: Unit = unit if isinstance(unit, Unit) else unit_of(unit)
     u.reference_unit = True
-    group = UnitGroup()
-    _set_base_attributes(group, name)
+    group = UnitGroup(name=name)
     group.units = [u]
     return group
 
@@ -72,8 +68,7 @@ def flow_property_of(name: str,
     fp = olca.flow_property_of('Mass', units)
     ```
     """
-    fp = FlowProperty()
-    _set_base_attributes(fp, name)
+    fp = FlowProperty(name=name)
     fp.unit_group = _as_ref(unit_group)
     return fp
 
@@ -103,8 +98,7 @@ def flow_of(name: str, flow_type: FlowType,
     ```
     """
 
-    flow = Flow()
-    _set_base_attributes(flow, name)
+    flow = Flow(name=name)
     flow.flow_type = flow_type
 
     prop = FlowPropertyFactor()
@@ -188,8 +182,7 @@ def process_of(name: str) -> Process:
     process = olca.process_of('Steel production')
     ```
     """
-    process = Process()
-    _set_base_attributes(process, name)
+    process = Process(name)
     process.process_type = ProcessType.UNIT_PROCESS
     return process
 
@@ -312,16 +305,9 @@ def location_of(name: str, code: Optional[str] = None) -> Location:
     de = olca.location_of('Germany', 'DE')
     ```
     """
-    location = Location()
-    _set_base_attributes(location, name)
+    location = Location(name)
     location.code = code or name
     return location
-
-
-def actor_of(name: str) -> Actor:
-    actor = Actor()
-    _set_base_attributes(actor, name)
-    return actor
 
 
 def parameter_of(name: str, value: Union[str, float],
@@ -362,8 +348,7 @@ def parameter_of(name: str, value: Union[str, float],
         client.insert(process)
     ```
     """
-    param = Parameter()
-    _set_base_attributes(param, name)
+    param = Parameter(name=name)
     param.parameter_scope = scope
     if isinstance(value, str):
         param.formula = value
@@ -418,13 +403,6 @@ def _allocation_of(
     else:
         process.allocation_factors.append(f)
     return f
-
-
-def _set_base_attributes(entity: RootEntity, name: str):
-    entity.id = str(uuid.uuid4())
-    entity.name = name
-    entity.version = '00.00.000'
-    entity.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
 
 
 def _as_ref(e: Union[RootEntity, Ref]) -> Ref:

@@ -12,6 +12,11 @@ type pyWriter struct {
 	model *YamlModel
 }
 
+// indentation levels
+const pyInd1 = "    "
+const pyInd2 = pyInd1 + pyInd1
+const pyInd3 = pyInd1 + pyInd1 + pyInd1
+
 func writePythonModule(args *args) {
 	model, err := ReadYamlModel(args.yamlDir)
 	check(err, "could not read YAML model")
@@ -40,7 +45,9 @@ func (w *pyWriter) writeModel() {
 `)
 
 	// imports
+	w.writeln("import datetime")
 	w.writeln("import json")
+	w.writeln("import uuid")
 	w.writeln()
 	w.writeln("from enum import Enum")
 	w.writeln("from dataclasses import dataclass")
@@ -61,7 +68,7 @@ func (w *pyWriter) writeModel() {
 	w.writeln("RootEntity = Union[")
 	w.model.EachClass(func(class *YamlClass) {
 		if w.model.IsRoot(class) {
-			w.writeln("    " + class.Name + ",")
+			w.writeln(pyInd1 + class.Name + ",")
 		}
 	})
 	w.writeln("]")
@@ -71,7 +78,7 @@ func (w *pyWriter) writeEnum(enum *YamlEnum) {
 	w.writeln("class", enum.Name+"(Enum):")
 	w.writeln()
 	for _, item := range enum.Items {
-		w.writeln("    " + item.Name + " = '" + item.Name + "'")
+		w.writeln(pyInd1 + item.Name + " = '" + item.Name + "'")
 	}
 	w.writeln()
 	w.writeln()
@@ -90,7 +97,7 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 			continue
 		}
 		propType := YamlPropType(prop.Type)
-		b.Writeln("    " + prop.PyName() +
+		b.Writeln(pyInd1 + prop.PyName() +
 			": Optional[" + propType.ToPython() + "] = None")
 	}
 	if class.Name == "Ref" {
@@ -98,21 +105,34 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	}
 	b.Writeln()
 
-	// to_dict
-	b.Writeln("    def to_dict(self) -> Dict[str, Any]:")
-	b.Writeln("        d: Dict[str, Any] = {}")
+	// __post_init__
 	if model.IsRoot(class) {
-		b.Writeln("        d['@type'] = '" + class.Name + "'")
+		fields := []string{"id", "version", "last_change"}
+		inits := []string{"str(uuid.uuid4())", "'01.00.000'",
+			"datetime.datetime.utcnow().isoformat() + 'Z'"}
+		b.Writeln(pyInd1 + "def __post_init__(self):")
+		for i, field := range fields {
+			b.Writeln(pyInd2 + "if self." + field + " is None:")
+			b.Writeln(pyInd3 + "self." + field + " = " + inits[i])
+		}
+		b.Writeln()
+	}
+
+	// to_dict
+	b.Writeln(pyInd1 + "def to_dict(self) -> Dict[str, Any]:")
+	b.Writeln(pyInd2 + "d: Dict[str, Any] = {}")
+	if model.IsRoot(class) {
+		b.Writeln(pyInd2 + "d['@type'] = '" + class.Name + "'")
 	}
 	if class.Name == "Ref" {
-		b.Writeln("        d['@type'] = self.model_type")
+		b.Writeln(pyInd2 + "d['@type'] = self.model_type")
 	}
 	for _, prop := range props {
 		if prop.Name == "@type" {
 			continue
 		}
 		selfProp := "self." + prop.PyName()
-		dictProp := "            d['" + prop.Name + "']"
+		dictProp := pyInd3 + "d['" + prop.Name + "']"
 		propType := prop.PropType()
 		b.Writeln("        if " + selfProp + ":")
 		if propType.IsPrimitive() ||
@@ -126,33 +146,33 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 			b.Writeln(dictProp + " = " + selfProp + ".to_dict()")
 		}
 	}
-	b.Writeln("        return d")
+	b.Writeln(pyInd2 + "return d")
 	b.Writeln()
 
 	// to_json
 	if model.IsRoot(class) {
-		b.Writeln("    def to_json(self) -> str:")
-		b.Writeln("        return json.dumps(self.to_dict(), indent=2)")
+		b.Writeln(pyInd1 + "def to_json(self) -> str:")
+		b.Writeln(pyInd2 + "return json.dumps(self.to_dict(), indent=2)")
 		b.Writeln()
 	}
 
 	// to_ref
 	if model.IsRoot(class) || class.Name == "Unit" {
-		b.Writeln("    def to_ref(self) -> 'Ref':")
-		b.Writeln("        ref = Ref(id=self.id, name=self.name)")
-		b.Writeln("        ref.category = self.category")
-		b.Writeln("        ref.model_type = '" + class.Name + "'")
-		b.Writeln("        return ref")
+		b.Writeln(pyInd1 + "def to_ref(self) -> 'Ref':")
+		b.Writeln(pyInd2 + "ref = Ref(id=self.id, name=self.name)")
+		b.Writeln(pyInd2 + "ref.category = self.category")
+		b.Writeln(pyInd2 + "ref.model_type = '" + class.Name + "'")
+		b.Writeln(pyInd2 + "return ref")
 		b.Writeln()
 	}
 
 	// from_dict
-	b.Writeln("    @staticmethod")
-	b.Writeln("    def from_dict(d: Dict[str, Any]) -> '" + class.Name + "':")
+	b.Writeln(pyInd1 + "@staticmethod")
+	b.Writeln(pyInd1 + "def from_dict(d: Dict[str, Any]) -> '" + class.Name + "':")
 	instance := strings.ToLower(toSnakeCase(class.Name))
-	b.Writeln("        " + instance + " = " + class.Name + "()")
+	b.Writeln(pyInd2 + instance + " = " + class.Name + "()")
 	if class.Name == "Ref" {
-		b.Writeln("        " + instance + ".model_type = d.get('@type', '')")
+		b.Writeln(pyInd2 + instance + ".model_type = d.get('@type', '')")
 	}
 	for _, prop := range props {
 		b.Writeln("        if v := d.get('" + prop.Name + "'):")

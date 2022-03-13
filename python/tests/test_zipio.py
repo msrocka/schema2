@@ -10,7 +10,7 @@ class ZipioTest(unittest.TestCase):
 
     def test_simple(self):
         zip_file = tempfile.mktemp('.zip')
-        actor = actor_of('My company')
+        actor = Actor(name='My company')
         with zipio.ZipWriter(zip_file) as writer:
             writer.write(actor)
         with zipio.ZipReader(zip_file) as reader:
