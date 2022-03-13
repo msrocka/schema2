@@ -40,6 +40,8 @@ func (w *pyWriter) writeModel() {
 `)
 
 	// imports
+	w.writeln("import json")
+	w.writeln()
 	w.writeln("from enum import Enum")
 	w.writeln("from dataclasses import dataclass")
 	w.writeln("from typing import Any, Dict, List, Optional, Union")
@@ -127,6 +129,14 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	b.Writeln("        return d")
 	b.Writeln()
 
+	// to_json
+	if model.IsRoot(class) {
+		b.Writeln("    def to_json(self) -> str:")
+		b.Writeln("        return json.dumps(self.to_dict(), indent=2)")
+		b.Writeln()
+	}
+
+	// to_ref
 	if model.IsRoot(class) || class.Name == "Unit" {
 		b.Writeln("    def to_ref(self) -> 'Ref':")
 		b.Writeln("        ref = Ref(id=self.id, name=self.name)")
@@ -163,6 +173,15 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 	b.Writeln("        return " + instance)
 	b.Writeln()
 
+	// from_json
+	if model.IsRoot(class) {
+		b.Writeln("    @staticmethod")
+		b.Writeln("    def from_json(data: Union[str, bytes]) -> '" +
+			class.Name + "':")
+		b.Writeln("        return " + class.Name + ".from_dict(json.loads(data))")
+		b.Writeln()
+	}
+
 	return b.String()
 }
 
@@ -182,8 +201,8 @@ func (w *pyWriter) write(args ...string) {
 
 func topoSortClasses(model *YamlModel) []*YamlClass {
 
-	// check if there is a link between a class A and
-	// another class B where B is dependent from A
+	// check if there is a link between a class A and another class B where B is
+	// dependent from A. B is dependent from A if it has a property of type A.
 	isLinked := func(class, dependent *YamlClass) bool {
 		if class == dependent {
 			return false
@@ -217,16 +236,44 @@ func topoSortClasses(model *YamlModel) []*YamlClass {
 		})
 	})
 
+	// make sure that every RootEntity is dependent from 'Ref' as we generate a
+	// to_ref method where the Ref type should be known
+	refDeps, ok := dependents["Ref"]
+	if !ok {
+		refDeps = make([]string, 0)
+	}
+	model.EachClass(func(class *YamlClass) {
+		if !model.IsRoot(class) && class.Name != "Unit" {
+			return
+		}
+		contains := false
+		for _, dep := range refDeps {
+			if class.Name == dep {
+				contains = true
+				break
+			}
+		}
+		if !contains {
+			refDeps = append(refDeps, class.Name)
+			dependencyCount[class.Name] += 1
+		}
+	})
+	dependents["Ref"] = refDeps
+
 	// sort dependencies in topological order
 	order := make([]string, 0)
 	for len(dependencyCount) > 0 {
 
-		// find next node with no dependencies
+		// find next node with no dependencies; if there are multiple options, try
+		// to do this in alphabetical order so that we get a stable sort order
 		node := ""
 		for n, count := range dependencyCount {
-			if count <= 0 {
+			if count > 0 {
+				continue
+			}
+			if node == "" ||
+				strings.Compare(strings.ToLower(n), strings.ToLower(node)) < 0 {
 				node = n
-				break
 			}
 		}
 

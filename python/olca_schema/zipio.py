@@ -1,4 +1,3 @@
-import json
 import zipfile
 
 import olca_schema as schema
@@ -26,8 +25,7 @@ class ZipWriter:
             raise ValueError('entity must have an ID')
         folder = _folder_of_entity(entity)
         path = f'{folder}/{entity.id}.json'
-        data = json.dumps(entity.to_dict(), indent='  ')
-        self.__zip.writestr(path, data)
+        self.__zip.writestr(path, entity.to_json())
 
 
 class ZipReader:
@@ -50,8 +48,7 @@ class ZipReader:
         if path not in self.__zip.namelist():
             return None
         data = self.__zip.read(path)
-        entity_dict = json.loads(data)
-        return class_type.from_dict(entity_dict)
+        return class_type.from_json(data)
 
     def read_actor(self, uid: str) -> Optional[schema.Actor]:
         return self.read(schema.Actor, uid)
