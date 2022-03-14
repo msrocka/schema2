@@ -214,7 +214,7 @@ class Ref:
         if self.description:
             d['description'] = self.description
         if self.flow_type:
-            d['flowType'] = self.flow_type
+            d['flowType'] = self.flow_type.value
         if self.library:
             d['library'] = self.library
         if self.location:
@@ -222,7 +222,7 @@ class Ref:
         if self.name:
             d['name'] = self.name
         if self.process_type:
-            d['processType'] = self.process_type
+            d['processType'] = self.process_type.value
         if self.ref_unit:
             d['refUnit'] = self.ref_unit
         return d
@@ -384,7 +384,7 @@ class AllocationFactor:
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         if self.allocation_type:
-            d['allocationType'] = self.allocation_type
+            d['allocationType'] = self.allocation_type.value
         if self.exchange:
             d['exchange'] = self.exchange.to_dict()
         if self.formula:
@@ -448,7 +448,7 @@ class Category:
         if self.library:
             d['library'] = self.library
         if self.model_type:
-            d['modelType'] = self.model_type
+            d['modelType'] = self.model_type.value
         if self.name:
             d['name'] = self.name
         if self.tags:
@@ -1049,7 +1049,7 @@ class FlowProperty:
         if self.description:
             d['description'] = self.description
         if self.flow_property_type:
-            d['flowPropertyType'] = self.flow_property_type
+            d['flowPropertyType'] = self.flow_property_type.value
         if self.last_change:
             d['lastChange'] = self.last_change
         if self.library:
@@ -1177,7 +1177,7 @@ class Flow:
         if self.flow_properties:
             d['flowProperties'] = [e.to_dict() for e in self.flow_properties]
         if self.flow_type:
-            d['flowType'] = self.flow_type
+            d['flowType'] = self.flow_type.value
         if self.formula:
             d['formula'] = self.formula
         if self.is_infrastructure_flow:
@@ -1772,94 +1772,6 @@ class ProcessLink:
 
 
 @dataclass
-class Project:
-
-    id: Optional[str] = None
-    category: Optional[str] = None
-    description: Optional[str] = None
-    impact_method: Optional[Ref] = None
-    last_change: Optional[str] = None
-    library: Optional[str] = None
-    name: Optional[str] = None
-    nw_set: Optional[NwSet] = None
-    tags: Optional[List[str]] = None
-    version: Optional[str] = None
-
-    def __post_init__(self):
-        if self.id is None:
-            self.id = str(uuid.uuid4())
-        if self.version is None:
-            self.version = '01.00.000'
-        if self.last_change is None:
-            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
-
-    def to_dict(self) -> Dict[str, Any]:
-        d: Dict[str, Any] = {}
-        d['@type'] = 'Project'
-        if self.id:
-            d['@id'] = self.id
-        if self.category:
-            d['category'] = self.category
-        if self.description:
-            d['description'] = self.description
-        if self.impact_method:
-            d['impactMethod'] = self.impact_method.to_dict()
-        if self.last_change:
-            d['lastChange'] = self.last_change
-        if self.library:
-            d['library'] = self.library
-        if self.name:
-            d['name'] = self.name
-        if self.nw_set:
-            d['nwSet'] = self.nw_set.to_dict()
-        if self.tags:
-            d['tags'] = self.tags
-        if self.version:
-            d['version'] = self.version
-        return d
-
-    def to_json(self) -> str:
-        return json.dumps(self.to_dict(), indent=2)
-
-    def to_ref(self) -> 'Ref':
-        ref = Ref(id=self.id, name=self.name)
-        ref.category = self.category
-        ref.model_type = 'Project'
-        return ref
-
-    @staticmethod
-    def from_dict(d: Dict[str, Any]) -> 'Project':
-        project = Project()
-        if v := d.get('@type'):
-            project.schema_type = v
-        if v := d.get('@id'):
-            project.id = v
-        if v := d.get('category'):
-            project.category = v
-        if v := d.get('description'):
-            project.description = v
-        if v := d.get('impactMethod'):
-            project.impact_method = Ref[ImpactMethod].from_dict(v)
-        if v := d.get('lastChange'):
-            project.last_change = v
-        if v := d.get('library'):
-            project.library = v
-        if v := d.get('name'):
-            project.name = v
-        if v := d.get('nwSet'):
-            project.nw_set = NwSet.from_dict(v)
-        if v := d.get('tags'):
-            project.tags = v
-        if v := d.get('version'):
-            project.version = v
-        return project
-
-    @staticmethod
-    def from_json(data: Union[str, bytes]) -> 'Project':
-        return Project.from_dict(json.loads(data))
-
-
-@dataclass
 class Result:
 
     id: Optional[str] = None
@@ -1979,7 +1891,7 @@ class SocialAspect:
         if self.raw_amount:
             d['rawAmount'] = self.raw_amount
         if self.risk_level:
-            d['riskLevel'] = self.risk_level
+            d['riskLevel'] = self.risk_level.value
         if self.social_indicator:
             d['socialIndicator'] = self.social_indicator.to_dict()
         if self.source:
@@ -2231,7 +2143,7 @@ class Uncertainty:
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         if self.distribution_type:
-            d['distributionType'] = self.distribution_type
+            d['distributionType'] = self.distribution_type.value
         if self.geom_mean:
             d['geomMean'] = self.geom_mean
         if self.geom_mean_formula:
@@ -2318,6 +2230,7 @@ class Exchange:
     is_avoided_product: Optional[bool] = None
     is_input: Optional[bool] = None
     is_quantitative_reference: Optional[bool] = None
+    location: Optional[Ref] = None
     uncertainty: Optional[Uncertainty] = None
     unit: Optional[Ref] = None
 
@@ -2353,6 +2266,8 @@ class Exchange:
             d['isInput'] = self.is_input
         if self.is_quantitative_reference:
             d['isQuantitativeReference'] = self.is_quantitative_reference
+        if self.location:
+            d['location'] = self.location.to_dict()
         if self.uncertainty:
             d['uncertainty'] = self.uncertainty.to_dict()
         if self.unit:
@@ -2394,6 +2309,8 @@ class Exchange:
             exchange.is_input = v
         if v := d.get('isQuantitativeReference'):
             exchange.is_quantitative_reference = v
+        if v := d.get('location'):
+            exchange.location = Ref[Location].from_dict(v)
         if v := d.get('uncertainty'):
             exchange.uncertainty = Uncertainty.from_dict(v)
         if v := d.get('unit'):
@@ -2497,7 +2414,7 @@ class Parameter:
         if self.name:
             d['name'] = self.name
         if self.parameter_scope:
-            d['parameterScope'] = self.parameter_scope
+            d['parameterScope'] = self.parameter_scope.value
         if self.tags:
             d['tags'] = self.tags
         if self.uncertainty:
@@ -2560,6 +2477,7 @@ class ImpactCategory:
 
     id: Optional[str] = None
     category: Optional[str] = None
+    code: Optional[str] = None
     description: Optional[str] = None
     impact_factors: Optional[List[ImpactFactor]] = None
     last_change: Optional[str] = None
@@ -2586,6 +2504,8 @@ class ImpactCategory:
             d['@id'] = self.id
         if self.category:
             d['category'] = self.category
+        if self.code:
+            d['code'] = self.code
         if self.description:
             d['description'] = self.description
         if self.impact_factors:
@@ -2626,6 +2546,8 @@ class ImpactCategory:
             impact_category.id = v
         if v := d.get('category'):
             impact_category.category = v
+        if v := d.get('code'):
+            impact_category.code = v
         if v := d.get('description'):
             impact_category.description = v
         if v := d.get('impactFactors'):
@@ -2658,6 +2580,7 @@ class ParameterRedef:
 
     context: Optional[Ref] = None
     description: Optional[str] = None
+    is_protected: Optional[bool] = None
     name: Optional[str] = None
     uncertainty: Optional[Uncertainty] = None
     value: Optional[float] = None
@@ -2668,6 +2591,8 @@ class ParameterRedef:
             d['context'] = self.context.to_dict()
         if self.description:
             d['description'] = self.description
+        if self.is_protected:
+            d['isProtected'] = self.is_protected
         if self.name:
             d['name'] = self.name
         if self.uncertainty:
@@ -2685,6 +2610,8 @@ class ParameterRedef:
             parameter_redef.context = Ref.from_dict(v)
         if v := d.get('description'):
             parameter_redef.description = v
+        if v := d.get('isProtected'):
+            parameter_redef.is_protected = v
         if v := d.get('name'):
             parameter_redef.name = v
         if v := d.get('uncertainty'):
@@ -2713,11 +2640,11 @@ class CalculationSetup:
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
         if self.allocation:
-            d['allocation'] = self.allocation
+            d['allocation'] = self.allocation.value
         if self.amount:
             d['amount'] = self.amount
         if self.calculation_type:
-            d['calculationType'] = self.calculation_type
+            d['calculationType'] = self.calculation_type.value
         if self.flow_property:
             d['flowProperty'] = self.flow_property.to_dict()
         if self.impact_method:
@@ -2850,7 +2777,7 @@ class Process:
         if self.category:
             d['category'] = self.category
         if self.default_allocation_method:
-            d['defaultAllocationMethod'] = self.default_allocation_method
+            d['defaultAllocationMethod'] = self.default_allocation_method.value
         if self.description:
             d['description'] = self.description
         if self.dq_entry:
@@ -2878,7 +2805,7 @@ class Process:
         if self.process_documentation:
             d['processDocumentation'] = self.process_documentation.to_dict()
         if self.process_type:
-            d['processType'] = self.process_type
+            d['processType'] = self.process_type.value
         if self.social_aspects:
             d['socialAspects'] = [e.to_dict() for e in self.social_aspects]
         if self.social_dq_system:
@@ -3070,6 +2997,165 @@ class ProductSystem:
     @staticmethod
     def from_json(data: Union[str, bytes]) -> 'ProductSystem':
         return ProductSystem.from_dict(json.loads(data))
+
+
+@dataclass
+class ProjectVariant:
+
+    allocation_method: Optional[AllocationType] = None
+    amount: Optional[float] = None
+    description: Optional[str] = None
+    is_disabled: Optional[bool] = None
+    name: Optional[str] = None
+    parameter_redefs: Optional[List[ParameterRedef]] = None
+    product_system: Optional[Ref] = None
+    unit: Optional[Ref] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        if self.allocation_method:
+            d['allocationMethod'] = self.allocation_method.value
+        if self.amount:
+            d['amount'] = self.amount
+        if self.description:
+            d['description'] = self.description
+        if self.is_disabled:
+            d['isDisabled'] = self.is_disabled
+        if self.name:
+            d['name'] = self.name
+        if self.parameter_redefs:
+            d['parameterRedefs'] = [e.to_dict() for e in self.parameter_redefs]
+        if self.product_system:
+            d['productSystem'] = self.product_system.to_dict()
+        if self.unit:
+            d['unit'] = self.unit.to_dict()
+        return d
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'ProjectVariant':
+        project_variant = ProjectVariant()
+        if v := d.get('@type'):
+            project_variant.schema_type = v
+        if v := d.get('allocationMethod'):
+            project_variant.allocation_method = v
+        if v := d.get('amount'):
+            project_variant.amount = v
+        if v := d.get('description'):
+            project_variant.description = v
+        if v := d.get('isDisabled'):
+            project_variant.is_disabled = v
+        if v := d.get('name'):
+            project_variant.name = v
+        if v := d.get('parameterRedefs'):
+            project_variant.parameter_redefs = [ParameterRedef.from_dict(e) for e in v]
+        if v := d.get('productSystem'):
+            project_variant.product_system = Ref[ProductSystem].from_dict(v)
+        if v := d.get('unit'):
+            project_variant.unit = Ref[Unit].from_dict(v)
+        return project_variant
+
+
+@dataclass
+class Project:
+
+    id: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    impact_method: Optional[Ref] = None
+    is_with_costs: Optional[bool] = None
+    is_with_regionalization: Optional[bool] = None
+    last_change: Optional[str] = None
+    library: Optional[str] = None
+    name: Optional[str] = None
+    nw_set: Optional[NwSet] = None
+    tags: Optional[List[str]] = None
+    variants: Optional[List[ProjectVariant]] = None
+    version: Optional[str] = None
+
+    def __post_init__(self):
+        if self.id is None:
+            self.id = str(uuid.uuid4())
+        if self.version is None:
+            self.version = '01.00.000'
+        if self.last_change is None:
+            self.last_change = datetime.datetime.utcnow().isoformat() + 'Z'
+
+    def to_dict(self) -> Dict[str, Any]:
+        d: Dict[str, Any] = {}
+        d['@type'] = 'Project'
+        if self.id:
+            d['@id'] = self.id
+        if self.category:
+            d['category'] = self.category
+        if self.description:
+            d['description'] = self.description
+        if self.impact_method:
+            d['impactMethod'] = self.impact_method.to_dict()
+        if self.is_with_costs:
+            d['isWithCosts'] = self.is_with_costs
+        if self.is_with_regionalization:
+            d['isWithRegionalization'] = self.is_with_regionalization
+        if self.last_change:
+            d['lastChange'] = self.last_change
+        if self.library:
+            d['library'] = self.library
+        if self.name:
+            d['name'] = self.name
+        if self.nw_set:
+            d['nwSet'] = self.nw_set.to_dict()
+        if self.tags:
+            d['tags'] = self.tags
+        if self.variants:
+            d['variants'] = [e.to_dict() for e in self.variants]
+        if self.version:
+            d['version'] = self.version
+        return d
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict(), indent=2)
+
+    def to_ref(self) -> 'Ref':
+        ref = Ref(id=self.id, name=self.name)
+        ref.category = self.category
+        ref.model_type = 'Project'
+        return ref
+
+    @staticmethod
+    def from_dict(d: Dict[str, Any]) -> 'Project':
+        project = Project()
+        if v := d.get('@type'):
+            project.schema_type = v
+        if v := d.get('@id'):
+            project.id = v
+        if v := d.get('category'):
+            project.category = v
+        if v := d.get('description'):
+            project.description = v
+        if v := d.get('impactMethod'):
+            project.impact_method = Ref[ImpactMethod].from_dict(v)
+        if v := d.get('isWithCosts'):
+            project.is_with_costs = v
+        if v := d.get('isWithRegionalization'):
+            project.is_with_regionalization = v
+        if v := d.get('lastChange'):
+            project.last_change = v
+        if v := d.get('library'):
+            project.library = v
+        if v := d.get('name'):
+            project.name = v
+        if v := d.get('nwSet'):
+            project.nw_set = NwSet.from_dict(v)
+        if v := d.get('tags'):
+            project.tags = v
+        if v := d.get('variants'):
+            project.variants = [ProjectVariant.from_dict(e) for e in v]
+        if v := d.get('version'):
+            project.version = v
+        return project
+
+    @staticmethod
+    def from_json(data: Union[str, bytes]) -> 'Project':
+        return Project.from_dict(json.loads(data))
 
 
 @dataclass

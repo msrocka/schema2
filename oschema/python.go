@@ -136,10 +136,11 @@ func (model *YamlModel) ToPyClass(class *YamlClass) string {
 		propType := prop.PropType()
 		b.Writeln("        if " + selfProp + ":")
 		if propType.IsPrimitive() ||
-			propType.IsEnumOf(model) ||
 			(propType.IsList() && propType.UnpackList().IsPrimitive()) ||
 			propType == "GeoJSON" {
 			b.Writeln(dictProp + " = " + selfProp)
+		} else if propType.IsEnumOf(model) {
+			b.Writeln(dictProp + " = " + selfProp + ".value")
 		} else if propType.IsList() {
 			b.Writeln(dictProp + " = [e.to_dict() for e in " + selfProp + "]")
 		} else {
