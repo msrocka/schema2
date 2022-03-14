@@ -92,24 +92,34 @@ func (w *mdWriter) summary() string {
 	buff.Writeln("[Introduction](./README.md)")
 	buff.Writeln("[Changes](./CHANGES.md)")
 
-	buff.Writeln("# Classes\n")
+	buff.Writeln("# Root entities\n")
 	innerTypes := w.innerTypes()
-	for _, t := range w.model.Types {
-		if t.IsEnum() || innerTypes[t.Name()] != "" {
-			continue
+	w.model.EachClass(func(class *YamlClass) {
+		if !w.model.IsRoot(class) {
+			return
 		}
+		buff.Writeln(" - [" + class.Name + "](./classes/" + class.Name + ".md)")
+		w.model.EachClass(func(inner *YamlClass) {
+			if innerTypes[inner.Name] == class.Name {
+				buff.Writeln("   - [" + inner.Name + "](./classes/" +
+					inner.Name + ".md)\n")
+			}
+		})
+	})
 
-		buff.Writeln(" - [" + t.Name() + "](./classes/" + t.Name() + ".md)")
-		for _, inner := range w.model.Types {
-			if inner.IsEnum() {
-				continue
-			}
-			if innerTypes[inner.Name()] == t.Name() {
-				buff.Writeln("   - [" + inner.Name() + "](./classes/" +
-					inner.Name() + ".md)\n")
-			}
+	buff.Writeln("# Other components\n")
+	w.model.EachClass(func(class *YamlClass) {
+		if w.model.IsRoot(class) || innerTypes[class.Name] != "" {
+			return
 		}
-	}
+		buff.Writeln(" - [" + class.Name + "](./classes/" + class.Name + ".md)")
+		w.model.EachClass(func(inner *YamlClass) {
+			if innerTypes[inner.Name] == class.Name {
+				buff.Writeln("   - [" + inner.Name + "](./classes/" +
+					inner.Name + ".md)\n")
+			}
+		})
+	})
 
 	buff.Writeln("\n# Enumerations\n")
 	for _, t := range w.model.Types {
@@ -157,8 +167,22 @@ func (w *mdWriter) docClassOf(class *YamlClass) string {
 	}
 
 	buff.WriteString("## Python class stub\n\n")
+	buff.WriteString(`
+The snippet below shows the names of the properties of the corresponding
+Python class of the [olca-schema](https://pypi.org/project/olca-schema)
+package. Note that this is not the full class definition but just shows
+the names of the class and its properties.
+`)
 	buff.WriteString("\n\n```python\n\n")
-	buff.WriteString(w.model.ToPyClass(class))
+	buff.WriteString("@dataclass\n")
+	buff.WriteString("class " + class.Name + ":\n")
+	for _, prop := range w.model.AllPropsOf(class) {
+		if prop.Name == "@type" {
+			continue
+		}
+		buff.WriteString("  " + prop.PyName() + ": " +
+			prop.PropType().ToPython() + "\n")
+	}
 	buff.WriteString("\n```\n")
 
 	return buff.String()
