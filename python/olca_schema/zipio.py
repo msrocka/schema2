@@ -11,7 +11,7 @@ class ZipWriter:
         self.__zip = zipfile.ZipFile(
             file_name, mode='a', compression=zipfile.ZIP_DEFLATED)
         if 'olca-schema.json' not in self.__zip.namelist():
-            self.__zip.writestr('olca-schema.json', '{"version": 2}""')
+            self.__zip.writestr('olca-schema.json', '{"version": 2}')
 
     def __enter__(self):
         return self
