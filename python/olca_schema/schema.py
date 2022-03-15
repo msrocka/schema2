@@ -1511,6 +1511,7 @@ class ImpactMethod:
 
     id: Optional[str] = None
     category: Optional[str] = None
+    code: Optional[str] = None
     description: Optional[str] = None
     impact_categories: Optional[List[Ref]] = None
     last_change: Optional[str] = None
@@ -1536,6 +1537,8 @@ class ImpactMethod:
             d['@id'] = self.id
         if self.category:
             d['category'] = self.category
+        if self.code:
+            d['code'] = self.code
         if self.description:
             d['description'] = self.description
         if self.impact_categories:
@@ -1574,6 +1577,8 @@ class ImpactMethod:
             impact_method.id = v
         if v := d.get('category'):
             impact_method.category = v
+        if v := d.get('code'):
+            impact_method.code = v
         if v := d.get('description'):
             impact_method.description = v
         if v := d.get('impactCategories'):

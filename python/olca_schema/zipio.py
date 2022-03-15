@@ -2,7 +2,7 @@ import zipfile
 
 import olca_schema as schema
 
-from typing import Optional, Union
+from typing import Optional
 
 
 class ZipWriter:
@@ -10,6 +10,8 @@ class ZipWriter:
     def __init__(self, file_name: str):
         self.__zip = zipfile.ZipFile(
             file_name, mode='a', compression=zipfile.ZIP_DEFLATED)
+        if 'olca-schema.json' not in self.__zip.namelist():
+            self.__zip.writestr('olca-schema.json', '{"version": 2}""')
 
     def __enter__(self):
         return self
@@ -74,9 +76,9 @@ def _folder_of_class(t: type) -> str:
     if t == schema.FlowProperty:
         return 'flow_properties'
     if t == schema.ImpactCategory:
-        return 'impact_categories'
+        return 'lcia_categories'
     if t == schema.ImpactMethod:
-        return 'impact_methods'
+        return 'lcia_methods'
     if t == schema.Location:
         return 'locations'
     if t == schema.Parameter:
