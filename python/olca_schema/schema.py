@@ -507,7 +507,7 @@ class Currency:
     last_change: Optional[str] = None
     library: Optional[str] = None
     name: Optional[str] = None
-    reference_currency: Optional[Ref] = None
+    ref_currency: Optional[Ref] = None
     tags: Optional[List[str]] = None
     version: Optional[str] = None
 
@@ -538,8 +538,8 @@ class Currency:
             d['library'] = self.library
         if self.name:
             d['name'] = self.name
-        if self.reference_currency:
-            d['referenceCurrency'] = self.reference_currency.to_dict()
+        if self.ref_currency:
+            d['refCurrency'] = self.ref_currency.to_dict()
         if self.tags:
             d['tags'] = self.tags
         if self.version:
@@ -576,8 +576,8 @@ class Currency:
             currency.library = v
         if v := d.get('name'):
             currency.name = v
-        if v := d.get('referenceCurrency'):
-            currency.reference_currency = Ref[Currency].from_dict(v)
+        if v := d.get('refCurrency'):
+            currency.ref_currency = Ref[Currency].from_dict(v)
         if v := d.get('tags'):
             currency.tags = v
         if v := d.get('version'):
@@ -1110,7 +1110,7 @@ class FlowPropertyFactor:
 
     conversion_factor: Optional[float] = None
     flow_property: Optional[Ref] = None
-    is_reference_flow_property: Optional[bool] = None
+    is_ref_flow_property: Optional[bool] = None
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {}
@@ -1118,8 +1118,8 @@ class FlowPropertyFactor:
             d['conversionFactor'] = self.conversion_factor
         if self.flow_property:
             d['flowProperty'] = self.flow_property.to_dict()
-        if self.is_reference_flow_property:
-            d['isReferenceFlowProperty'] = self.is_reference_flow_property
+        if self.is_ref_flow_property:
+            d['isRefFlowProperty'] = self.is_ref_flow_property
         return d
 
     @staticmethod
@@ -1131,8 +1131,8 @@ class FlowPropertyFactor:
             flow_property_factor.conversion_factor = v
         if v := d.get('flowProperty'):
             flow_property_factor.flow_property = Ref[FlowProperty].from_dict(v)
-        if v := d.get('isReferenceFlowProperty'):
-            flow_property_factor.is_reference_flow_property = v
+        if v := d.get('isRefFlowProperty'):
+            flow_property_factor.is_ref_flow_property = v
         return flow_property_factor
 
 
@@ -1257,7 +1257,7 @@ class FlowResult:
     flow: Optional[Ref] = None
     flow_property: Optional[Ref] = None
     is_input: Optional[bool] = None
-    is_reference_flow: Optional[bool] = None
+    is_ref_flow: Optional[bool] = None
     location: Optional[Ref] = None
     unit: Optional[Ref] = None
 
@@ -1273,8 +1273,8 @@ class FlowResult:
             d['flowProperty'] = self.flow_property.to_dict()
         if self.is_input:
             d['isInput'] = self.is_input
-        if self.is_reference_flow:
-            d['isReferenceFlow'] = self.is_reference_flow
+        if self.is_ref_flow:
+            d['isRefFlow'] = self.is_ref_flow
         if self.location:
             d['location'] = self.location.to_dict()
         if self.unit:
@@ -1296,8 +1296,8 @@ class FlowResult:
             flow_result.flow_property = Ref[FlowProperty].from_dict(v)
         if v := d.get('isInput'):
             flow_result.is_input = v
-        if v := d.get('isReferenceFlow'):
-            flow_result.is_reference_flow = v
+        if v := d.get('isRefFlow'):
+            flow_result.is_ref_flow = v
         if v := d.get('location'):
             flow_result.location = Ref[Location].from_dict(v)
         if v := d.get('unit'):
@@ -1616,9 +1616,9 @@ class ProcessDocumentation:
     data_set_owner: Optional[Ref] = None
     data_treatment_description: Optional[str] = None
     geography_description: Optional[str] = None
-    has_copyright: Optional[bool] = None
     intended_application: Optional[str] = None
     inventory_method_description: Optional[str] = None
+    is_copyright_protected: Optional[bool] = None
     modeling_constants_description: Optional[str] = None
     project_description: Optional[str] = None
     publication: Optional[Ref] = None
@@ -1652,12 +1652,12 @@ class ProcessDocumentation:
             d['dataTreatmentDescription'] = self.data_treatment_description
         if self.geography_description:
             d['geographyDescription'] = self.geography_description
-        if self.has_copyright:
-            d['hasCopyright'] = self.has_copyright
         if self.intended_application:
             d['intendedApplication'] = self.intended_application
         if self.inventory_method_description:
             d['inventoryMethodDescription'] = self.inventory_method_description
+        if self.is_copyright_protected:
+            d['isCopyrightProtected'] = self.is_copyright_protected
         if self.modeling_constants_description:
             d['modelingConstantsDescription'] = self.modeling_constants_description
         if self.project_description:
@@ -1707,12 +1707,12 @@ class ProcessDocumentation:
             process_documentation.data_treatment_description = v
         if v := d.get('geographyDescription'):
             process_documentation.geography_description = v
-        if v := d.get('hasCopyright'):
-            process_documentation.has_copyright = v
         if v := d.get('intendedApplication'):
             process_documentation.intended_application = v
         if v := d.get('inventoryMethodDescription'):
             process_documentation.inventory_method_description = v
+        if v := d.get('isCopyrightProtected'):
+            process_documentation.is_copyright_protected = v
         if v := d.get('modelingConstantsDescription'):
             process_documentation.modeling_constants_description = v
         if v := d.get('projectDescription'):
@@ -2898,8 +2898,8 @@ class ProductSystem:
     parameter_sets: Optional[List[ParameterRedefSet]] = None
     process_links: Optional[List[ProcessLink]] = None
     processes: Optional[List[Ref]] = None
-    reference_exchange: Optional[ExchangeRef] = None
-    reference_process: Optional[Ref] = None
+    ref_exchange: Optional[ExchangeRef] = None
+    ref_process: Optional[Ref] = None
     tags: Optional[List[str]] = None
     target_amount: Optional[float] = None
     target_flow_property: Optional[Ref] = None
@@ -2935,10 +2935,10 @@ class ProductSystem:
             d['processLinks'] = [e.to_dict() for e in self.process_links]
         if self.processes:
             d['processes'] = [e.to_dict() for e in self.processes]
-        if self.reference_exchange:
-            d['referenceExchange'] = self.reference_exchange.to_dict()
-        if self.reference_process:
-            d['referenceProcess'] = self.reference_process.to_dict()
+        if self.ref_exchange:
+            d['refExchange'] = self.ref_exchange.to_dict()
+        if self.ref_process:
+            d['refProcess'] = self.ref_process.to_dict()
         if self.tags:
             d['tags'] = self.tags
         if self.target_amount:
@@ -2983,10 +2983,10 @@ class ProductSystem:
             product_system.process_links = [ProcessLink.from_dict(e) for e in v]
         if v := d.get('processes'):
             product_system.processes = [Ref.from_dict(e) for e in v]
-        if v := d.get('referenceExchange'):
-            product_system.reference_exchange = ExchangeRef.from_dict(v)
-        if v := d.get('referenceProcess'):
-            product_system.reference_process = Ref[Process].from_dict(v)
+        if v := d.get('refExchange'):
+            product_system.ref_exchange = ExchangeRef.from_dict(v)
+        if v := d.get('refProcess'):
+            product_system.ref_process = Ref[Process].from_dict(v)
         if v := d.get('tags'):
             product_system.tags = v
         if v := d.get('targetAmount'):
@@ -3169,7 +3169,7 @@ class Unit:
     id: Optional[str] = None
     conversion_factor: Optional[float] = None
     description: Optional[str] = None
-    is_reference_unit: Optional[bool] = None
+    is_ref_unit: Optional[bool] = None
     name: Optional[str] = None
     synonyms: Optional[List[str]] = None
 
@@ -3181,8 +3181,8 @@ class Unit:
             d['conversionFactor'] = self.conversion_factor
         if self.description:
             d['description'] = self.description
-        if self.is_reference_unit:
-            d['isReferenceUnit'] = self.is_reference_unit
+        if self.is_ref_unit:
+            d['isRefUnit'] = self.is_ref_unit
         if self.name:
             d['name'] = self.name
         if self.synonyms:
@@ -3206,8 +3206,8 @@ class Unit:
             unit.conversion_factor = v
         if v := d.get('description'):
             unit.description = v
-        if v := d.get('isReferenceUnit'):
-            unit.is_reference_unit = v
+        if v := d.get('isRefUnit'):
+            unit.is_ref_unit = v
         if v := d.get('name'):
             unit.name = v
         if v := d.get('synonyms'):
