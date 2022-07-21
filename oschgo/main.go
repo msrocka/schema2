@@ -58,11 +58,11 @@ func proto(args *args) {
 
 func printHelp() {
 	fmt.Println(`
-oschema
+osch
 
 usage:
 
-$ oschema [command] [options]
+$ osch [command] [options]
 
 commands:
 
